@@ -169,7 +169,7 @@ def api_study_plan():
 if __name__ == '__main__':
     print("🚀 Starting I.R.I.S for Railway deployment...")
     
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8080))
     debug = os.environ.get('RAILWAY_ENVIRONMENT') != 'production'
     
     print(f"🌐 Server starting on port {port}")
