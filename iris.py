@@ -13,8 +13,10 @@ MONICA_KEY = os.getenv("MONICA_API_KEY")
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 if not MONICA_KEY or not GEMINI_KEY:
-    print("❌ Missing API keys. Check .env")
-    sys.exit(1)
+    # Thay vì sys.exit(1) để process không chết trên platform như Railway.
+    print("⚠️ Missing API keys: MONICA_API_KEY or GEMINI_API_KEY not set. Set environment variables to enable AI calls.")
+    MONICA_KEY = MONICA_KEY or ""
+    GEMINI_KEY = GEMINI_KEY or ""
 
 # Monica client (OpenAI compatible)
 monica = OpenAI(base_url="https://openapi.monica.im/v1", api_key=MONICA_KEY)

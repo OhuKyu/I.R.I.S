@@ -135,7 +135,17 @@ class CacheManager:
                 for func, count, hits in function_stats
             }
         }
-    
+
+    # Compatibility aliases used by iris_flask.py / frontend
+    def get_stats(self) -> Dict[str, Any]:
+        return self.get_cache_stats()
+
+    def clear_all(self) -> int:
+        return self.clear_all_cache()
+
+    def clear_expired(self) -> int:
+        return self.clear_expired_cache()
+
     def clear_all_cache(self) -> int:
         """Xóa toàn bộ cache"""
         conn = sqlite3.connect(self.db_path)
