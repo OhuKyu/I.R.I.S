@@ -15,7 +15,7 @@ def index():
 def cache_stats():
     """Get cache statistics"""
     try:
-        stats = cache.get_cache_stats()
+        stats = cache.get_stats()
         return jsonify(stats)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -139,4 +139,9 @@ if __name__ == '__main__':
     cache.init_database()
     print("✅ Cache system initialized")
     print(f"📊 Cache database: {cache.db_path}")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)
