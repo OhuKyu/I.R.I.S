@@ -167,12 +167,14 @@ def api_study_plan():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    print("🚀 Starting I.R.I.S for Railway deployment...")
+    print("🚀 Starting I.R.I.S for Render deployment...")
     
-    port = int(os.environ.get('PORT', 8080))
-    debug = os.environ.get('RAILWAY_ENVIRONMENT') != 'production'
+    port = int(os.environ.get('PORT', 5000))
+    is_render = os.environ.get('RENDER_ENVIRONMENT') == 'production'
+    debug = not is_render
     
     print(f"🌐 Server starting on port {port}")
     print(f"🔧 Debug mode: {debug}")
+    print(f"🏗️ Platform: {'Render' if is_render else 'Local'}")
     
     app.run(debug=debug, host='0.0.0.0', port=port)

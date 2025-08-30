@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: iris-chatbot
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python iris_flask.py"
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MONICA_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: RENDER_ENVIRONMENT
+        value: production

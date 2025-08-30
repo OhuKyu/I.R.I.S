@@ -49,3 +49,9 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Render deployment files (keep render.yaml)
+.render/
+
+# Railway config (no longer needed)
+railway.toml
