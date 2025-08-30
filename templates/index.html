@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -20,75 +21,97 @@
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white shadow-lg border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-                        <i class="fas fa-brain text-white text-lg"></i>
+    <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-3 sm:py-4">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-sm sm:text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">I.R.I.S</h1>
-                        <p class="text-sm text-gray-600">Intelligent Study Assistant</p>
+                        <h1 class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">I.R.I.S</h1>
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 hidden sm:block">Intelligent Study Assistant</p>
                     </div>
                 </div>
-                <div class="hidden md:flex items-center space-x-4">
-                    <div id="cache-status" class="flex items-center space-x-2">
-                        <i class="fas fa-database text-gray-400"></i>
-                        <span class="text-sm text-gray-500">Cache: <span id="cache-count">-</span></span>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200" title="Toggle theme">
+                        <i id="theme-icon" class="fas fa-moon text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                    <div id="cache-status" class="flex items-center space-x-1 sm:space-x-2">
+                        <i class="fas fa-database text-gray-400 dark:text-gray-500 text-xs sm:text-sm"></i>
+                        <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                            <span class="hidden sm:inline">Cache: </span>
+                            <span id="cache-count">-</span>
+                        </span>
                     </div>
-                    <span class="text-sm text-gray-500">Powered by AI</span>
-                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <div class="hidden md:flex items-center space-x-2">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">Powered by AI</span>
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <!-- Tab Navigation -->
-        <div class="bg-white rounded-xl shadow-lg mb-8">
-            <div class="border-b border-gray-200">
-                <nav class="flex space-x-8 px-6" aria-label="Tabs">
-                    <button onclick="switchTab('explain')" class="tab-btn active py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-lightbulb mr-2"></i>Giải thích
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 sm:mb-8 transition-colors duration-300">
+            <div class="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                <nav class="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max" aria-label="Tabs">
+                    <button onclick="switchTab('explain')" class="tab-btn active py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-lightbulb mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Giải thích</span>
+                        <span class="sm:hidden">Giải thích</span>
                     </button>
-                    <button onclick="switchTab('summarize')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
+                    <button onclick="switchTab('summarize')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-compress-alt mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Tóm tắt</span>
+                        <span class="sm:hidden">Tóm tắt</span>
                     </button>
-                    <button onclick="switchTab('code')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-code mr-2"></i>Giải thích Code
+                    <button onclick="switchTab('code')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-code mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Code</span>
+                        <span class="sm:hidden">Code</span>
                     </button>
-                    <button onclick="switchTab('flashcards')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-cards-blank mr-2"></i>Flashcards
+                    <button onclick="switchTab('flashcards')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-cards-blank mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Flashcards</span>
+                        <span class="sm:hidden">Cards</span>
                     </button>
-                    <button onclick="switchTab('quiz')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-question-circle mr-2"></i>Quiz
+                    <button onclick="switchTab('quiz')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-question-circle mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Quiz</span>
+                        <span class="sm:hidden">Quiz</span>
                     </button>
-                    <button onclick="switchTab('study-plan')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-calendar-alt mr-2"></i>Kế hoạch
+                    <button onclick="switchTab('study-plan')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-calendar-alt mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Kế hoạch</span>
+                        <span class="sm:hidden">Plan</span>
                     </button>
-                    <button onclick="switchTab('cache')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-database mr-2"></i>Cache
+                    <button onclick="switchTab('cache')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
+                        <i class="fas fa-database mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Cache</span>
+                        <span class="sm:hidden">Cache</span>
                     </button>
                 </nav>
             </div>
 
             <!-- Tab Content -->
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <!-- Explain Tab -->
                 <div id="explain-tab" class="tab-content">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Câu hỏi cần giải thích</label>
-                            <textarea id="explain-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Câu hỏi cần giải thích</label>
+                            <textarea id="explain-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
                         </div>
-                        <button onclick="handleExplain()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleExplain()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-magic mr-2"></i>Giải thích
                         </button>
-                        <div id="explain-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                        <div id="explain-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
                     </div>
                 </div>
 
@@ -96,22 +119,22 @@
                 <div id="summarize-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Văn bản cần tóm tắt</label>
-                            <textarea id="summarize-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Văn bản cần tóm tắt</label>
+                            <textarea id="summarize-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tỷ lệ tóm tắt (%)</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tỷ lệ tóm tắt (%)</label>
                             <input type="range" id="summarize-ratio" min="20" max="80" value="40" class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 <span>20%</span>
                                 <span id="ratio-value">40%</span>
                                 <span>80%</span>
                             </div>
                         </div>
-                        <button onclick="handleSummarize()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleSummarize()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
                         </button>
-                        <div id="summarize-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                        <div id="summarize-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
                     </div>
                 </div>
 
@@ -119,8 +142,8 @@
                 <div id="code-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Ngôn ngữ lập trình</label>
-                            <select id="code-language" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ngôn ngữ lập trình</label>
+                            <select id="code-language" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                                 <option value="python">Python</option>
                                 <option value="javascript">JavaScript</option>
                                 <option value="java">Java</option>
@@ -130,13 +153,13 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Code cần giải thích</label>
-                            <textarea id="code-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-sm" rows="8" placeholder="Nhập code cần giải thích..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Code cần giải thích</label>
+                            <textarea id="code-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="8" placeholder="Nhập code cần giải thích..."></textarea>
                         </div>
-                        <button onclick="handleExplainCode()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleExplainCode()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-code mr-2"></i>Giải thích Code
                         </button>
-                        <div id="code-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                        <div id="code-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
                     </div>
                 </div>
 
@@ -144,14 +167,14 @@
                 <div id="flashcards-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung học tập</label>
-                            <textarea id="flashcards-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội dung học tập</label>
+                            <textarea id="flashcards-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Số lượng flashcards</label>
-                            <input type="number" id="flashcards-count" min="1" max="10" value="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số lượng flashcards</label>
+                            <input type="number" id="flashcards-count" min="1" max="10" value="5" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                         </div>
-                        <button onclick="handleFlashcards()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleFlashcards()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-cards-blank mr-2"></i>Tạo Flashcards
                         </button>
                         <div id="flashcards-result" class="hidden space-y-4"></div>
@@ -162,14 +185,14 @@
                 <div id="quiz-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung học tập</label>
-                            <textarea id="quiz-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội dung học tập</label>
+                            <textarea id="quiz-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Số câu hỏi</label>
-                            <input type="number" id="quiz-count" min="1" max="10" value="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số câu hỏi</label>
+                            <input type="number" id="quiz-count" min="1" max="10" value="3" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                         </div>
-                        <button onclick="handleQuiz()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-question-circle mr-2"></i>Tạo Quiz
                         </button>
                         <div id="quiz-result" class="hidden space-y-4"></div>
@@ -180,93 +203,93 @@
                 <div id="study-plan-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu học tập</label>
-                            <textarea id="study-goal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục tiêu học tập</label>
+                            <textarea id="study-goal" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Số ngày</label>
-                                <input type="number" id="study-days" min="1" max="365" value="7" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số ngày</label>
+                                <input type="number" id="study-days" min="1" max="365" value="7" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Giờ/ngày</label>
-                                <input type="number" id="study-hours" min="1" max="12" value="2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Giờ/ngày</label>
+                                <input type="number" id="study-hours" min="1" max="12" value="2" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                             </div>
                         </div>
-                        <button onclick="handleStudyPlan()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                        <button onclick="handleStudyPlan()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-calendar-alt mr-2"></i>Tạo Kế hoạch
                         </button>
-                        <div id="study-plan-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                        <div id="study-plan-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
                     </div>
                 </div>
 
                 <!-- Cache Management Tab -->
                 <div id="cache-tab" class="tab-content hidden">
                     <div class="space-y-6">
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-2">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
+                            <h3 class="text-base sm:text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">
                                 <i class="fas fa-info-circle mr-2"></i>Quản lý Cache
                             </h3>
-                            <p class="text-blue-700 text-sm">
+                            <p class="text-blue-700 dark:text-blue-400 text-sm">
                                 Cache giúp lưu trữ các câu trả lời từ AI để tái sử dụng, tiết kiệm token và tăng tốc độ phản hồi.
                             </p>
                         </div>
                         
                         <!-- Cache Statistics -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-sm text-gray-600">Tổng số cache</p>
-                                        <p id="total-cache" class="text-2xl font-bold text-gray-900">-</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Tổng số cache</p>
+                                        <p id="total-cache" class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">-</p>
                                     </div>
-                                    <i class="fas fa-database text-blue-500 text-xl"></i>
+                                    <i class="fas fa-database text-blue-500 text-lg sm:text-xl"></i>
                                 </div>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-sm text-gray-600">Cache hits</p>
-                                        <p id="cache-hits" class="text-2xl font-bold text-green-600">-</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Cache hits</p>
+                                        <p id="cache-hits" class="text-xl sm:text-2xl font-bold text-green-600">-</p>
                                     </div>
-                                    <i class="fas fa-bullseye text-green-500 text-xl"></i>
+                                    <i class="fas fa-bullseye text-green-500 text-lg sm:text-xl"></i>
                                 </div>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:col-span-2 lg:col-span-1 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-sm text-gray-600">Token tiết kiệm</p>
-                                        <p id="tokens-saved" class="text-2xl font-bold text-purple-600">-</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Token tiết kiệm</p>
+                                        <p id="tokens-saved" class="text-xl sm:text-2xl font-bold text-purple-600">-</p>
                                     </div>
-                                    <i class="fas fa-coins text-purple-500 text-xl"></i>
+                                    <i class="fas fa-coins text-purple-500 text-lg sm:text-xl"></i>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Cache Actions -->
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Thao tác Cache</h4>
-                            <div class="flex flex-wrap gap-4">
-                                <button onclick="loadCacheStats()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center">
+                        <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
+                            <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">Thao tác Cache</h4>
+                            <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                                <button onclick="loadCacheStats()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-sync-alt mr-2"></i>Làm mới thống kê
                                 </button>
                                 
-                                <button onclick="clearExpiredCache()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center">
+                                <button onclick="clearExpiredCache()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-clock mr-2"></i>Xóa cache hết hạn
                                 </button>
                                 
-                                <button onclick="clearAllCache()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center">
+                                <button onclick="clearAllCache()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-trash mr-2"></i>Xóa toàn bộ cache
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Cache Details -->
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Chi tiết Cache</h4>
-                            <div id="cache-details" class="space-y-2 text-sm text-gray-600">
+                        <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
+                            <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">Chi tiết Cache</h4>
+                            <div id="cache-details" class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                                 <p>Nhấn "Làm mới thống kê" để xem chi tiết cache...</p>
                             </div>
                         </div>
@@ -277,35 +300,60 @@
     </main>
 
     <!-- Loading Modal -->
-    <div id="loading-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span class="text-gray-700">Đang xử lý...</span>
+    <div id="loading-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 flex items-center space-x-3 sm:space-x-4 max-w-sm w-full transition-colors duration-200">
+            <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
+            <span class="text-gray-700 dark:text-gray-300 text-sm sm:text-base">Đang xử lý...</span>
         </div>
     </div>
 
     <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            html.className = savedTheme;
+            
+            if (savedTheme === 'dark') {
+                themeIcon.className = 'fas fa-sun text-gray-600 dark:text-gray-300';
+            } else {
+                themeIcon.className = 'fas fa-moon text-gray-600 dark:text-gray-300';
+            }
+        }
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = html.className;
+            
+            if (currentTheme === 'dark') {
+                html.className = 'light';
+                themeIcon.className = 'fas fa-moon text-gray-600 dark:text-gray-300';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.className = 'dark';
+                themeIcon.className = 'fas fa-sun text-gray-600 dark:text-gray-300';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
         // Tab switching
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });
             
-            // Remove active class from all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active', 'border-primary', 'text-primary');
-                btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300', 'hover:border-gray-300', 'dark:hover:border-gray-600');
             });
             
-            // Show selected tab
             document.getElementById(tabName + '-tab').classList.remove('hidden');
             
-            // Add active class to selected button
             event.target.classList.add('active', 'border-primary', 'text-primary');
-            event.target.classList.remove('border-transparent', 'text-gray-500');
+            event.target.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
             
-            // Update ratio display
             const ratioSlider = document.getElementById('summarize-ratio');
             const ratioValue = document.getElementById('ratio-value');
             ratioSlider.addEventListener('input', function() {
@@ -317,20 +365,19 @@
             }
         }
 
-        // Initialize active tab styling
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            
             const activeBtn = document.querySelector('.tab-btn.active');
             activeBtn.classList.add('border-primary', 'text-primary');
-            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
             
-            // Load initial cache stats for header
             loadCacheStats();
         });
 
         function formatResponse(text) {
             if (!text) return '';
             
-            // Convert markdown-like formatting to HTML
             let formatted = text
                 // Bold text: **text** or __text__
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -352,16 +399,13 @@
                 .replace(/\n\n/g, '</p><p class="mb-3">')
                 .replace(/\n/g, '<br>');
             
-            // Wrap in paragraph tags
             formatted = '<p class="mb-3">' + formatted + '</p>';
             
-            // Clean up empty paragraphs
             formatted = formatted.replace(/<p class="mb-3"><\/p>/g, '');
             
             return formatted;
         }
 
-        // API call functions
         async function makeAPICall(endpoint, data) {
             const modal = document.getElementById('loading-modal');
             modal.classList.remove('hidden');
@@ -457,17 +501,14 @@
                 let flashcards;
                 try {
                     if (typeof result.result === 'string') {
-                        // Try to parse as JSON string
                         flashcards = JSON.parse(result.result);
                     } else if (Array.isArray(result.result)) {
-                        // Already an array
                         flashcards = result.result;
                     } else {
-                        // Fallback - might be nested in another property
                         flashcards = result.result.flashcards || result.result;
                     }
                     
-                    console.log("[v0] Parsed flashcards:", flashcards); // Debug log for parsed data
+                    console.log("[v0] Parsed flashcards:", flashcards);
                     
                     if (!Array.isArray(flashcards)) {
                         throw new Error('Flashcards is not an array');
@@ -721,7 +762,6 @@
                     document.getElementById('tokens-saved').textContent = (stats.tokens_saved || 0).toLocaleString();
                     document.getElementById('cache-count').textContent = stats.total_entries || 0;
                     
-                    // Update cache details
                     const detailsDiv = document.getElementById('cache-details');
                     let detailsHtml = '';
                     
@@ -759,7 +799,7 @@
                 
                 if (response.ok) {
                     alert('Đã xóa cache hết hạn thành công!');
-                    loadCacheStats(); // Refresh stats
+                    loadCacheStats();
                 } else {
                     alert('Lỗi: ' + (result.error || 'Unknown error'));
                 }
@@ -778,7 +818,7 @@
                 
                 if (response.ok) {
                     alert('Đã xóa toàn bộ cache thành công!');
-                    loadCacheStats(); // Refresh stats
+                    loadCacheStats();
                 } else {
                     alert('Lỗi: ' + (result.error || 'Unknown error'));
                 }
@@ -804,7 +844,6 @@
         .prose {
             line-height: 1.6;
         }
-        /* Added styles for better text formatting */
         .prose h1, .prose h2, .prose h3 {
             margin-top: 1rem;
             margin-bottom: 0.5rem;
@@ -826,6 +865,53 @@
         }
         .prose li {
             margin-bottom: 0.25rem;
+        }
+        
+        .dark .prose strong {
+            color: #d1d5db;
+        }
+        .dark .prose em {
+            color: #9ca3af;
+        }
+        .dark .prose code {
+            background-color: #374151;
+            color: #e5e7eb;
+        }
+        
+        @media (max-width: 640px) {
+            .tab-btn {
+                font-size: 0.75rem;
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+            
+            .flashcard {
+                margin-bottom: 1rem;
+            }
+            
+            nav[aria-label="Tabs"] {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            nav[aria-label="Tabs"]::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        
+        .tab-btn:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+        }
+        
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
     </style>
 </body>
