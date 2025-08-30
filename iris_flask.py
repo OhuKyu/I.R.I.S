@@ -2,10 +2,39 @@ from flask import Flask, render_template, request, jsonify
 from iris import IRIS
 from cache_manager import CacheManager
 import json
+import os
 
 app = Flask(__name__)
-iris = IRIS()
-cache = CacheManager()
+
+try:
+    iris = IRIS()
+    cache = CacheManager()
+    cache.init_database()
+    print("✅ I.R.I.S and cache system initialized successfully")
+except Exception as e:
+    print(f"❌ Error initializing components: {e}")
+    iris = None
+    cache = None
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for Railway"""
+    if iris is None or cache is None:
+        return jsonify({'status': 'unhealthy', 'message': 'Components not initialized'}), 503
+    
+    try:
+        # Test cache connection
+        cache.get_stats()
+        return jsonify({
+            'status': 'healthy',
+            'message': 'I.R.I.S is running',
+            'components': {
+                'iris': 'ok',
+                'cache': 'ok'
+            }
+        })
+    except Exception as e:
+        return jsonify({'status': 'unhealthy', 'message': str(e)}), 503
 
 @app.route('/')
 def index():
@@ -40,6 +69,9 @@ def clear_expired_cache():
 
 @app.route('/api/explain', methods=['POST'])
 def api_explain():
+    if iris is None:
+        return jsonify({'error': 'I.R.I.S not initialized'}), 503
+        
     try:
         data = request.get_json()
         question = data.get('question', '')
@@ -135,13 +167,12 @@ def api_study_plan():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    print("🚀 Starting I.R.I.S with cache system...")
-    cache.init_database()
-    print("✅ Cache system initialized")
-    print(f"📊 Cache database: {cache.db_path}")
+    print("🚀 Starting I.R.I.S for Railway deployment...")
     
-    import os
-    port = int(os.environ.get('PORT', 8080))
-    debug = os.environ.get('FLASK_ENV') != 'production'
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('RAILWAY_ENVIRONMENT') != 'production'
+    
+    print(f"🌐 Server starting on port {port}")
+    print(f"🔧 Debug mode: {debug}")
     
     app.run(debug=debug, host='0.0.0.0', port=port)
