@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I.R.I.S - Intelligent Study Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">I.R.I.S</h1>
+                        <p class="text-sm text-gray-600">Intelligent Study Assistant</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <div id="cache-status" class="flex items-center space-x-2">
+                        <i class="fas fa-database text-gray-400"></i>
+                        <span class="text-sm text-gray-500">Cache: <span id="cache-count">-</span></span>
+                    </div>
+                    <span class="text-sm text-gray-500">Powered by AI</span>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-xl shadow-lg mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                    <button onclick="switchTab('explain')" class="tab-btn active py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-lightbulb mr-2"></i>Giải thích
+                    </button>
+                    <button onclick="switchTab('summarize')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
+                    </button>
+                    <button onclick="switchTab('code')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-code mr-2"></i>Giải thích Code
+                    </button>
+                    <button onclick="switchTab('flashcards')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-cards-blank mr-2"></i>Flashcards
+                    </button>
+                    <button onclick="switchTab('quiz')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-question-circle mr-2"></i>Quiz
+                    </button>
+                    <button onclick="switchTab('study-plan')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-calendar-alt mr-2"></i>Kế hoạch
+                    </button>
+                    <button onclick="switchTab('cache')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-database mr-2"></i>Cache
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- Explain Tab -->
+                <div id="explain-tab" class="tab-content">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Câu hỏi cần giải thích</label>
+                            <textarea id="explain-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
+                        </div>
+                        <button onclick="handleExplain()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-magic mr-2"></i>Giải thích
+                        </button>
+                        <div id="explain-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                    </div>
+                </div>
+
+                <!-- Summarize Tab -->
+                <div id="summarize-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Văn bản cần tóm tắt</label>
+                            <textarea id="summarize-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tỷ lệ tóm tắt (%)</label>
+                            <input type="range" id="summarize-ratio" min="20" max="80" value="40" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>20%</span>
+                                <span id="ratio-value">40%</span>
+                                <span>80%</span>
+                            </div>
+                        </div>
+                        <button onclick="handleSummarize()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
+                        </button>
+                        <div id="summarize-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                    </div>
+                </div>
+
+                <!-- Code Tab -->
+                <div id="code-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ngôn ngữ lập trình</label>
+                            <select id="code-language" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="python">Python</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Code cần giải thích</label>
+                            <textarea id="code-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-sm" rows="8" placeholder="Nhập code cần giải thích..."></textarea>
+                        </div>
+                        <button onclick="handleExplainCode()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-code mr-2"></i>Giải thích Code
+                        </button>
+                        <div id="code-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                    </div>
+                </div>
+
+                <!-- Flashcards Tab -->
+                <div id="flashcards-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung học tập</label>
+                            <textarea id="flashcards-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số lượng flashcards</label>
+                            <input type="number" id="flashcards-count" min="1" max="10" value="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <button onclick="handleFlashcards()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-cards-blank mr-2"></i>Tạo Flashcards
+                        </button>
+                        <div id="flashcards-result" class="hidden space-y-4"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Tab -->
+                <div id="quiz-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung học tập</label>
+                            <textarea id="quiz-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Số câu hỏi</label>
+                            <input type="number" id="quiz-count" min="1" max="10" value="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <button onclick="handleQuiz()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-question-circle mr-2"></i>Tạo Quiz
+                        </button>
+                        <div id="quiz-result" class="hidden space-y-4"></div>
+                    </div>
+                </div>
+
+                <!-- Study Plan Tab -->
+                <div id="study-plan-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu học tập</label>
+                            <textarea id="study-goal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Số ngày</label>
+                                <input type="number" id="study-days" min="1" max="365" value="7" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Giờ/ngày</label>
+                                <input type="number" id="study-hours" min="1" max="12" value="2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                        </div>
+                        <button onclick="handleStudyPlan()" class="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center">
+                            <i class="fas fa-calendar-alt mr-2"></i>Tạo Kế hoạch
+                        </button>
+                        <div id="study-plan-result" class="hidden bg-gray-50 p-4 rounded-lg border-l-4 border-primary"></div>
+                    </div>
+                </div>
+
+                <!-- Cache Management Tab -->
+                <div id="cache-tab" class="tab-content hidden">
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-2">
+                                <i class="fas fa-info-circle mr-2"></i>Quản lý Cache
+                            </h3>
+                            <p class="text-blue-700 text-sm">
+                                Cache giúp lưu trữ các câu trả lời từ AI để tái sử dụng, tiết kiệm token và tăng tốc độ phản hồi.
+                            </p>
+                        </div>
+                        
+                        <!-- Cache Statistics -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Tổng số cache</p>
+                                        <p id="total-cache" class="text-2xl font-bold text-gray-900">-</p>
+                                    </div>
+                                    <i class="fas fa-database text-blue-500 text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Cache hits</p>
+                                        <p id="cache-hits" class="text-2xl font-bold text-green-600">-</p>
+                                    </div>
+                                    <i class="fas fa-bullseye text-green-500 text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Token tiết kiệm</p>
+                                        <p id="tokens-saved" class="text-2xl font-bold text-purple-600">-</p>
+                                    </div>
+                                    <i class="fas fa-coins text-purple-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cache Actions -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Thao tác Cache</h4>
+                            <div class="flex flex-wrap gap-4">
+                                <button onclick="loadCacheStats()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center">
+                                    <i class="fas fa-sync-alt mr-2"></i>Làm mới thống kê
+                                </button>
+                                
+                                <button onclick="clearExpiredCache()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center">
+                                    <i class="fas fa-clock mr-2"></i>Xóa cache hết hạn
+                                </button>
+                                
+                                <button onclick="clearAllCache()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center">
+                                    <i class="fas fa-trash mr-2"></i>Xóa toàn bộ cache
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Cache Details -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Chi tiết Cache</h4>
+                            <div id="cache-details" class="space-y-2 text-sm text-gray-600">
+                                <p>Nhấn "Làm mới thống kê" để xem chi tiết cache...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span class="text-gray-700">Đang xử lý...</span>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Add active class to selected button
+            event.target.classList.add('active', 'border-primary', 'text-primary');
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+            
+            // Update ratio display
+            const ratioSlider = document.getElementById('summarize-ratio');
+            const ratioValue = document.getElementById('ratio-value');
+            ratioSlider.addEventListener('input', function() {
+                ratioValue.textContent = this.value + '%';
+            });
+            
+            if (tabName === 'cache') {
+                loadCacheStats();
+            }
+        }
+
+        // Initialize active tab styling
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeBtn = document.querySelector('.tab-btn.active');
+            activeBtn.classList.add('border-primary', 'text-primary');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            
+            // Load initial cache stats for header
+            loadCacheStats();
+        });
+
+        function formatResponse(text) {
+            if (!text) return '';
+            
+            // Convert markdown-like formatting to HTML
+            let formatted = text
+                // Bold text: **text** or __text__
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                // Italic text: *text* or _text_
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/_(.*?)_/g, '<em>$1</em>')
+                // Headers: ### Header
+                .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold text-gray-800 mt-4 mb-2">$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold text-gray-800 mt-4 mb-2">$1</h1>')
+                // Lists: - item or * item
+                .replace(/^[\-\*] (.*$)/gm, '<li class="ml-4 mb-1">• $1</li>')
+                // Numbers: 1. item
+                .replace(/^\d+\. (.*$)/gm, '<li class="ml-4 mb-1 list-decimal">$1</li>')
+                // Code blocks: `code`
+                .replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">$1</code>')
+                // Line breaks
+                .replace(/\n\n/g, '</p><p class="mb-3">')
+                .replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph tags
+            formatted = '<p class="mb-3">' + formatted + '</p>';
+            
+            // Clean up empty paragraphs
+            formatted = formatted.replace(/<p class="mb-3"><\/p>/g, '');
+            
+            return formatted;
+        }
+
+        // API call functions
+        async function makeAPICall(endpoint, data) {
+            const modal = document.getElementById('loading-modal');
+            modal.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                modal.classList.add('hidden');
+                
+                if (response.ok) {
+                    return result;
+                } else {
+                    throw new Error(result.error || 'Unknown error');
+                }
+            } catch (error) {
+                modal.classList.add('hidden');
+                alert('Lỗi: ' + error.message);
+                return null;
+            }
+        }
+
+        async function handleExplain() {
+            const question = document.getElementById('explain-input').value.trim();
+            if (!question) {
+                alert('Vui lòng nhập câu hỏi!');
+                return;
+            }
+            
+            const result = await makeAPICall('explain', { question });
+            if (result) {
+                const resultDiv = document.getElementById('explain-result');
+                resultDiv.innerHTML = `<div class="prose max-w-none">${formatResponse(result.result)}</div>`;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        async function handleSummarize() {
+            const text = document.getElementById('summarize-input').value.trim();
+            const ratio = document.getElementById('summarize-ratio').value / 100;
+            
+            if (!text) {
+                alert('Vui lòng nhập văn bản!');
+                return;
+            }
+            
+            const result = await makeAPICall('summarize', { text, ratio });
+            if (result) {
+                const resultDiv = document.getElementById('summarize-result');
+                resultDiv.innerHTML = `<div class="prose max-w-none">${formatResponse(result.result)}</div>`;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        async function handleExplainCode() {
+            const code = document.getElementById('code-input').value.trim();
+            const language = document.getElementById('code-language').value;
+            
+            if (!code) {
+                alert('Vui lòng nhập code!');
+                return;
+            }
+            
+            const result = await makeAPICall('explain_code', { code, language });
+            if (result) {
+                const resultDiv = document.getElementById('code-result');
+                resultDiv.innerHTML = `<div class="prose max-w-none">${formatResponse(result.result)}</div>`;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        async function handleFlashcards() {
+            const text = document.getElementById('flashcards-input').value.trim();
+            const n = parseInt(document.getElementById('flashcards-count').value);
+            
+            if (!text) {
+                alert('Vui lòng nhập nội dung!');
+                return;
+            }
+            
+            const result = await makeAPICall('flashcards', { text, n });
+            if (result) {
+                console.log("[v0] Flashcard result:", result); // Added debug log to see actual data structure
+                const resultDiv = document.getElementById('flashcards-result');
+                let html = '';
+                
+                let flashcards;
+                try {
+                    if (typeof result.result === 'string') {
+                        // Try to parse as JSON string
+                        flashcards = JSON.parse(result.result);
+                    } else if (Array.isArray(result.result)) {
+                        // Already an array
+                        flashcards = result.result;
+                    } else {
+                        // Fallback - might be nested in another property
+                        flashcards = result.result.flashcards || result.result;
+                    }
+                    
+                    console.log("[v0] Parsed flashcards:", flashcards); // Debug log for parsed data
+                    
+                    if (!Array.isArray(flashcards)) {
+                        throw new Error('Flashcards is not an array');
+                    }
+                } catch (e) {
+                    console.error("[v0] Error parsing flashcards:", e);
+                    alert('Lỗi khi xử lý dữ liệu flashcard: ' + e.message);
+                    return;
+                }
+                
+                if (!flashcards || flashcards.length === 0) {
+                    resultDiv.innerHTML = '<div class="text-center text-gray-500 py-8">Không có flashcard nào được tạo.</div>';
+                    resultDiv.classList.remove('hidden');
+                    return;
+                }
+                
+                flashcards.forEach((card, index) => {
+                    const question = card.question || card.front || 'Không có câu hỏi';
+                    const answer = card.answer || card.back || 'Không có đáp án';
+                    const explanation = card.explanation || '';
+                    
+                    html += `
+                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                            <div class="flashcard cursor-pointer" onclick="flipCard(${index})">
+                                <div class="flashcard-front p-6" id="card-front-${index}">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="font-semibold text-primary text-lg">Flashcard ${index + 1}</h4>
+                                        <i class="fas fa-eye text-gray-400"></i>
+                                    </div>
+                                    <div class="text-gray-800 text-lg mb-4">${formatResponse(question)}</div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-hand-pointer mr-2"></i>
+                                        Nhấp để xem đáp án
+                                    </div>
+                                </div>
+                                <div class="flashcard-back hidden p-6 bg-gradient-to-br from-green-50 to-blue-50" id="card-back-${index}">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="font-semibold text-green-700 text-lg">Đáp án</h4>
+                                        <i class="fas fa-check-circle text-green-500"></i>
+                                    </div>
+                                    <div class="text-gray-800 text-lg mb-4">${formatResponse(answer)}</div>
+                                    ${explanation ? `
+                                        <div class="border-t border-gray-200 pt-4 mt-4">
+                                            <h5 class="font-medium text-gray-700 mb-2">Giải thích:</h5>
+                                            <div class="text-gray-600">${formatResponse(explanation)}</div>
+                                        </div>
+                                    ` : ''}
+                                    <div class="flex items-center text-sm text-gray-500 mt-4">
+                                        <i class="fas fa-undo mr-2"></i>
+                                        Nhấp để xem câu hỏi
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t">
+                                <button onclick="copyFlashcard(${index})" class="text-sm text-primary hover:text-primary-dark flex items-center">
+                                    <i class="fas fa-copy mr-2"></i>
+                                    Copy flashcard
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                resultDiv.innerHTML = html;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        function flipCard(index) {
+            const front = document.getElementById(`card-front-${index}`);
+            const back = document.getElementById(`card-back-${index}`);
+            
+            if (front.classList.contains('hidden')) {
+                front.classList.remove('hidden');
+                back.classList.add('hidden');
+            } else {
+                front.classList.add('hidden');
+                back.classList.remove('hidden');
+            }
+        }
+
+        function copyFlashcard(index) {
+            try {
+                const front = document.getElementById(`card-front-${index}`);
+                const back = document.getElementById(`card-back-${index}`);
+                
+                if (!front || !back) {
+                    throw new Error('Không tìm thấy flashcard');
+                }
+                
+                const questionEl = front.querySelector('.text-gray-800');
+                const answerEl = back.querySelector('.text-gray-800');
+                const explanationEl = back.querySelector('.text-gray-600');
+                
+                if (!questionEl || !answerEl) {
+                    throw new Error('Không tìm thấy nội dung flashcard');
+                }
+                
+                const question = questionEl.textContent.trim();
+                const answer = answerEl.textContent.trim();
+                const explanation = explanationEl ? explanationEl.textContent.trim() : '';
+                
+                const flashcardText = `Câu hỏi: ${question}\n\nĐáp án: ${answer}${explanation ? `\n\nGiải thích: ${explanation}` : ''}`;
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(flashcardText).then(() => {
+                        showCopySuccess();
+                    }).catch((err) => {
+                        console.error("[v0] Clipboard API failed:", err);
+                        fallbackCopy(flashcardText);
+                    });
+                } else {
+                    fallbackCopy(flashcardText);
+                }
+            } catch (error) {
+                console.error("[v0] Copy error:", error);
+                alert('Lỗi khi copy: ' + error.message);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (err) {
+                console.error("[v0] Fallback copy failed:", err);
+                showManualCopyModal(text);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        function showCopySuccess() {
+            const button = event.target.closest('button');
+            if (button) {
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Đã copy!';
+                button.classList.add('text-green-600');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('text-green-600');
+                }, 2000);
+            }
+        }
+        
+        function showManualCopyModal(text) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                    <h3 class="text-lg font-semibold mb-4">Copy thủ công</h3>
+                    <textarea class="w-full h-32 p-3 border border-gray-300 rounded-lg text-sm" readonly>${text}</textarea>
+                    <div class="flex justify-end mt-4">
+                        <button onclick="this.closest('.fixed').remove()" class="bg-primary text-white px-4 py-2 rounded-lg">Đóng</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function handleQuiz() {
+            const text = document.getElementById('quiz-input').value.trim();
+            const n = parseInt(document.getElementById('quiz-count').value);
+            
+            if (!text) {
+                alert('Vui lòng nhập nội dung!');
+                return;
+            }
+            
+            const result = await makeAPICall('quiz', { text, n });
+            if (result) {
+                const resultDiv = document.getElementById('quiz-result');
+                let html = '';
+                
+                result.result.forEach((quiz, index) => {
+                    html += `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                            <h4 class="font-semibold text-gray-800 mb-3">Câu ${index + 1}: ${formatResponse(quiz.question)}</h4>
+                            <div class="space-y-2 mb-4">
+                    `;
+                    
+                    quiz.options.forEach((option, optIndex) => {
+                        html += `
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="quiz-${index}" value="${option}" class="text-primary">
+                                <span class="text-gray-700">${formatResponse(option)}</span>
+                            </label>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                            <button onclick="showAnswer(${index})" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-90">
+                                Xem đáp án
+                            </button>
+                            <div id="quiz-answer-${index}" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-semibold text-green-800">Đáp án: ${formatResponse(quiz.answer)}</p>
+                                <div class="text-green-700 mt-1">${formatResponse(quiz.explanation)}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                resultDiv.innerHTML = html;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        function showAnswer(index) {
+            const answerDiv = document.getElementById(`quiz-answer-${index}`);
+            answerDiv.classList.toggle('hidden');
+        }
+
+        async function handleStudyPlan() {
+            const goal = document.getElementById('study-goal').value.trim();
+            const days = parseInt(document.getElementById('study-days').value);
+            const hours = parseInt(document.getElementById('study-hours').value);
+            
+            if (!goal) {
+                alert('Vui lòng nhập mục tiêu!');
+                return;
+            }
+            
+            const result = await makeAPICall('study_plan', { goal, days, hours });
+            if (result) {
+                const resultDiv = document.getElementById('study-plan-result');
+                resultDiv.innerHTML = `<div class="prose max-w-none">${formatResponse(result.result)}</div>`;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        // Cache management functions
+        async function loadCacheStats() {
+            try {
+                const response = await fetch('/api/cache/stats');
+                const stats = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('total-cache').textContent = stats.total_entries || 0;
+                    document.getElementById('cache-hits').textContent = stats.cache_hits || 0;
+                    document.getElementById('tokens-saved').textContent = (stats.tokens_saved || 0).toLocaleString();
+                    document.getElementById('cache-count').textContent = stats.total_entries || 0;
+                    
+                    // Update cache details
+                    const detailsDiv = document.getElementById('cache-details');
+                    let detailsHtml = '';
+                    
+                    if (stats.by_function && Object.keys(stats.by_function).length > 0) {
+                        detailsHtml += '<h5 class="font-medium text-gray-700 mb-2">Cache theo chức năng:</h5>';
+                        for (const [func, count] of Object.entries(stats.by_function)) {
+                            detailsHtml += `<p>• ${func}: ${count} entries</p>`;
+                        }
+                    }
+                    
+                    if (stats.oldest_entry) {
+                        detailsHtml += `<p class="mt-2"><strong>Entry cũ nhất:</strong> ${new Date(stats.oldest_entry).toLocaleString('vi-VN')}</p>`;
+                    }
+                    
+                    if (stats.newest_entry) {
+                        detailsHtml += `<p><strong>Entry mới nhất:</strong> ${new Date(stats.newest_entry).toLocaleString('vi-VN')}</p>`;
+                    }
+                    
+                    detailsDiv.innerHTML = detailsHtml || '<p>Không có dữ liệu cache.</p>';
+                } else {
+                    alert('Lỗi khi tải thống kê cache: ' + (stats.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('[v0] Cache stats error:', error);
+                alert('Lỗi khi tải thống kê cache: ' + error.message);
+            }
+        }
+        
+        async function clearExpiredCache() {
+            if (!confirm('Bạn có chắc muốn xóa cache hết hạn?')) return;
+            
+            try {
+                const response = await fetch('/api/cache/clear-expired', { method: 'POST' });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Đã xóa cache hết hạn thành công!');
+                    loadCacheStats(); // Refresh stats
+                } else {
+                    alert('Lỗi: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('[v0] Clear expired cache error:', error);
+                alert('Lỗi khi xóa cache hết hạn: ' + error.message);
+            }
+        }
+        
+        async function clearAllCache() {
+            if (!confirm('Bạn có chắc muốn xóa TOÀN BỘ cache? Hành động này không thể hoàn tác!')) return;
+            
+            try {
+                const response = await fetch('/api/cache/clear', { method: 'POST' });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Đã xóa toàn bộ cache thành công!');
+                    loadCacheStats(); // Refresh stats
+                } else {
+                    alert('Lỗi: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('[v0] Clear all cache error:', error);
+                alert('Lỗi khi xóa toàn bộ cache: ' + error.message);
+            }
+        }
+    </script>
+
+    <style>
+        .flashcard {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .flashcard:hover {
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            border-color: #6366f1 !important;
+            color: #6366f1 !important;
+        }
+        .prose {
+            line-height: 1.6;
+        }
+        /* Added styles for better text formatting */
+        .prose h1, .prose h2, .prose h3 {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .prose strong {
+            font-weight: 600;
+            color: #374151;
+        }
+        .prose em {
+            font-style: italic;
+            color: #4b5563;
+        }
+        .prose code {
+            background-color: #f3f4f6;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        .prose li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</body>
+</html>
