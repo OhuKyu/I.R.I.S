@@ -77,6 +77,40 @@ def call_ai(prompt: str, temperature=0.6, function_type="general") -> str:
         print(f"⚠️ Gemini failed: {e}")
         return "❌ All models failed. Please check your API keys or network connection."
 
+def call_ai_stream(prompt: str, temperature=0.6, function_type: str = "general"):
+    """Yield small text chunks from provider if streaming is supported; otherwise yield full text once."""
+    # Try Monica (OpenAI compatible) with stream
+    try:
+        stream = monica.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": SYSTEM_GUIDELINES},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=temperature,
+            stream=True,
+        )
+        full_text = []
+        for chunk in stream:
+            try:
+                delta = chunk.choices[0].delta.get("content") or ""
+            except Exception:
+                delta = ""
+            if delta:
+                full_text.append(delta)
+                yield delta
+        # Save to cache when done
+        final = "".join(full_text).strip()
+        if final:
+            cache_key = cache.generate_cache_key(function_type, prompt=prompt, temperature=temperature)
+            cache.set_cache(cache_key, function_type, {"prompt": prompt, "temperature": temperature}, final)
+        return
+    except Exception as e:
+        print(f"⚠️ stream fallback: {e}")
+    # Fallback: non-stream call, yield once
+    text = call_ai(prompt, temperature=temperature, function_type=function_type)
+    yield text
+
 # ====== Data Structures ======
 @dataclass
 class Flashcard:
@@ -97,6 +131,18 @@ class IRIS:
     def __init__(self):
         pass
 
+    def chat(self, message: str) -> str:
+        """General-purpose conversational reply, free-form.
+        Keeps the educational tone but allows any topic from motivation to guidance.
+        """
+        prompt = message.strip()
+        return call_ai(prompt, function_type="chat")
+
+    def chat_stream(self, message: str):
+        prompt = message.strip()
+        for chunk in call_ai_stream(prompt, function_type="chat"):
+            yield chunk
+
     def explain(self, question: str) -> str:
         prompt = f"Giải thích khái niệm hoặc câu hỏi học tập sau một cách chi tiết nhưng súc tích:\n{question}"
         return call_ai(prompt, function_type="explain")
@@ -111,25 +157,55 @@ class IRIS:
 
     def make_flashcards(self, text: str, n: int = 5) -> List[Flashcard]:
         prompt = f"""
-        Tạo {n} flashcard JSON từ nội dung sau:
-        Văn bản: {text}
+        Tạo {n} flashcard ở định dạng JSON THUẦN (chỉ JSON, không giải thích, không dùng ```),
+        mỗi phần tử có các khóa: "front" và "back" (và tùy chọn "explanation").
+        Nếu model sinh ra "question/answer" thì hãy đổi tên thành "front/back".
+        Nội dung: {text}
+        Ví dụ: [{{"front":"Hỏi?","back":"Đáp","explanation":"…"}}]
         """
         raw = call_ai(prompt, function_type="flashcards")
         try:
             data = json.loads(self._extract_json(raw))
-            return [Flashcard(**d) for d in data][:n]
+            if isinstance(data, dict) and 'flashcards' in data:
+                data = data['flashcards']
+            normalized = []
+            for item in data:
+                if isinstance(item, dict):
+                    front = item.get('front') or item.get('question') or item.get('q') or 'N/A'
+                    back = item.get('back') or item.get('answer') or item.get('a') or 'N/A'
+                    explanation = item.get('explanation') or item.get('note') or ''
+                    normalized.append(Flashcard(front=front, back=back if explanation == '' else f"{back}\n\n{explanation}"))
+            if not normalized:
+                raise ValueError('Empty flashcards after normalization')
+            return normalized[:n]
         except Exception:
             return [Flashcard(front="N/A", back=raw)]
 
     def quiz(self, text: str, n: int = 3) -> List[QuizItem]:
         prompt = f"""
-        Tạo {n} câu trắc nghiệm (JSON) từ nội dung sau:
-        Văn bản: {text}
+        Tạo {n} câu hỏi trắc nghiệm, trả về JSON THUẦN (chỉ JSON, không dùng ```),
+        mỗi phần tử có: "question" (string), "options" (array 3-5 lựa chọn), "answer" (string đúng), "explanation" (string ngắn).
+        Nội dung: {text}
+        Ví dụ: [{{"question":"…","options":["A","B"],"answer":"A","explanation":"…"}}]
         """
         raw = call_ai(prompt, function_type="quiz")
         try:
             data = json.loads(self._extract_json(raw))
-            return [QuizItem(**d) for d in data][:n]
+            if isinstance(data, dict) and 'quiz' in data:
+                data = data['quiz']
+            normalized: List[QuizItem] = []
+            for item in data:
+                if isinstance(item, dict):
+                    question = item.get('question') or item.get('q') or 'N/A'
+                    options = item.get('options') or item.get('choices') or []
+                    answer = item.get('answer') or item.get('correct') or 'N/A'
+                    explanation = item.get('explanation') or item.get('why') or ''
+                    if not isinstance(options, list):
+                        options = []
+                    normalized.append(QuizItem(question=question, options=options, answer=answer, explanation=explanation))
+            if not normalized:
+                raise ValueError('Empty quiz after normalization')
+            return normalized[:n]
         except Exception:
             return [QuizItem(question="N/A", options=[], answer="N/A", explanation=raw)]
 
@@ -141,9 +217,31 @@ class IRIS:
         return call_ai(prompt, function_type="study_plan")
 
     def _extract_json(self, text: str) -> str:
-        if "\`\`\`" in text:
-            parts = text.split("\`\`\`")
-            for blk in parts:
-                if blk.strip().startswith("{") or blk.strip().startswith("["):
-                    return blk.strip()
-        return text.strip()
+        """Extract JSON payload from LLM text.
+        Supports blocks like ```json ... ```, ``json ... ``, or inline JSON mixed with prose.
+        """
+        import re
+
+        if not text:
+            return text
+
+        s = text.strip()
+
+        # 1) Try to find content inside code fences with 2-3 backticks
+        fence_pattern = re.compile(r"`{2,3}[a-zA-Z]*\s*([\s\S]*?)`{2,3}")
+        for match in fence_pattern.finditer(s):
+            blk = match.group(1).strip()
+            if blk.startswith('{') or blk.startswith('['):
+                return blk
+
+        # 2) Fallback: find first JSON-like substring { ... } or [ ... ]
+        #    Try progressively larger spans until json.loads succeeds upstream
+        bracket_pattern = re.compile(r"(\{[\s\S]*\}|\[[\s\S]*\])")
+        candidates = bracket_pattern.findall(s)
+        for cand in candidates:
+            cand_strip = cand.strip()
+            if cand_strip.startswith('{') or cand_strip.startswith('['):
+                return cand_strip
+
+        # 3) As last resort, return original trimmed text
+        return s

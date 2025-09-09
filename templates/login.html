@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - I.R.I.S</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Đăng nhập</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Truy cập I.R.I.S</p>
+        {% if error %}
+        <div class="mb-4 text-sm text-red-600">{{ error }}</div>
+        {% endif %}
+        <form method="post" class="space-y-4">
+            {% if csrf_token %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% endif %}
+            <div>
+                <label class="block text-sm mb-1 text-gray-700 dark:text-gray-300">Tài khoản</label>
+                <input name="username" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required>
+            </div>
+            <div>
+                <label class="block text-sm mb-1 text-gray-700 dark:text-gray-300">Mật khẩu</label>
+                <input type="password" name="password" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required>
+            </div>
+            <button class="w-full bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 py-2.5 rounded-lg">Đăng nhập</button>
+        </form>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">Chưa có tài khoản? <a href="/register" class="underline">Đăng ký</a></p>
+    </div>
+</body>
+</html>
+

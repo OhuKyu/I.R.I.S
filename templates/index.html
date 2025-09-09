@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" class="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,107 +12,197 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#6366f1',
-                        secondary: '#8b5cf6',
-                        accent: '#06b6d4'
+                        primary: '#111827',
+                        secondary: '#6b7280',
+                        accent: '#9ca3af'
                     }
                 }
             }
         }
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
+
+<body class="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300"
+    data-role="{{ role|default('user') }}">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 transition-colors duration-300">
+    <header
+        class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3 sm:py-4">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
                         <i class="fas fa-brain text-white text-sm sm:text-lg"></i>
                     </div>
                     <div>
                         <h1 class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">I.R.I.S</h1>
-                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 hidden sm:block">Intelligent Study Assistant</p>
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 hidden sm:block">Intelligent Study
+                            Assistant</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200" title="Toggle theme">
+                    <button onclick="toggleTheme()"
+                        class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                        title="Toggle theme">
                         <i id="theme-icon" class="fas fa-moon text-gray-600 dark:text-gray-300"></i>
                     </button>
-                    <div id="cache-status" class="flex items-center space-x-1 sm:space-x-2">
-                        <i class="fas fa-database text-gray-400 dark:text-gray-500 text-xs sm:text-sm"></i>
-                        <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            <span class="hidden sm:inline">Cache: </span>
-                            <span id="cache-count">-</span>
-                        </span>
+                    
+                    <div class="relative">
+                        <button id="settings-btn" onclick="toggleSettings(event)" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600" title="Settings">
+                            <i class="fas fa-gear text-gray-600 dark:text-gray-300"></i>
+                        </button>
+                        <div id="settings-menu" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                            {% if role == 'admin' %}
+                            <a href="/admin" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-shield-halved"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                            <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                            {% endif %}
+                            <a href="/logout" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-right-from-bracket"></i>
+                                <span>Logout</span>
+                            </a>
                     </div>
-                    <div class="hidden md:flex items-center space-x-2">
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Powered by AI</span>
-                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <!-- Tab Navigation -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 sm:mb-8 transition-colors duration-300">
-            <div class="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-                <nav class="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max" aria-label="Tabs">
-                    <button onclick="switchTab('explain')" class="tab-btn active py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-lightbulb mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Giải thích</span>
-                        <span class="sm:hidden">Giải thích</span>
+    <!-- Main Content with Sidebar -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div class="flex gap-4 sm:gap-6">
+            <!-- Sidebar -->
+            <aside class="hidden md:block w-64 shrink-0">
+                <div class="sticky top-20 space-y-4">
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
+                        <button onclick="newChat()" class="w-full flex items-center justify-center gap-2 bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 py-2.5 rounded-lg hover:opacity-90">
+                            <i class="fas fa-plus"></i>
+                            <span>New Chat</span>
                     </button>
-                    <button onclick="switchTab('summarize')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-compress-alt mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Tóm tắt</span>
-                        <span class="sm:hidden">Tóm tắt</span>
+                    </div>
+                    <nav class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2">
+                        <button onclick="switchTab('chat')"
+                            class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                            <i class="fas fa-comments"></i>
+                            <span>AI Chat</span>
                     </button>
-                    <button onclick="switchTab('code')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-code mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Code</span>
-                        <span class="sm:hidden">Code</span>
+                        <button onclick="switchTab('explain')"
+                            class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                            <i class="fas fa-screwdriver-wrench"></i>
+                            <span>Study Tools</span>
                     </button>
-                    <button onclick="switchTab('flashcards')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-cards-blank mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Flashcards</span>
-                        <span class="sm:hidden">Cards</span>
+                        {% if role == 'admin' %}
+                        <!-- Removed Cache Manager and Admin Panel from sidebar (now in Settings) -->
+                        {% endif %}
+                        <button onclick="openHistory()"
+                            class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                            <i class="fas fa-rotate-left"></i>
+                            <span>History</span>
                     </button>
-                    <button onclick="switchTab('quiz')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-question-circle mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Quiz</span>
-                        <span class="sm:hidden">Quiz</span>
+                    </nav>
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
+                        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Recent Conversations
+                        </h3>
+                        <div id="recent-conversations" class="space-y-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Panel -->
+            <main class="flex-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 sm:mb-8 transition-colors duration-300">
+                    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h2 id="section-title" class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">AI
+                            Chat</h2>
+                        <p id="section-subtitle" class="text-sm text-gray-500 dark:text-gray-400 mt-1">Free-form
+                            assistant for guidance, motivation, and answers.</p>
+                    </div>
+
+                    <!-- Content Body -->
+                    <div class="p-4 sm:p-6">
+                        <!-- Study Tools Internal Tabs (visible only on Study Tools) -->
+                        <div id="study-tabs"
+                            class="hidden mb-4 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                            <nav class="flex space-x-4 sm:space-x-6 px-1 sm:px-2 min-w-max" aria-label="Study Tabs">
+                                <button onclick="switchTab('explain')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-lightbulb mr-1"></i> Giải thích
                     </button>
-                    <button onclick="switchTab('study-plan')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-calendar-alt mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Kế hoạch</span>
-                        <span class="sm:hidden">Plan</span>
+                                <button onclick="switchTab('summarize')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-wand-magic-sparkles mr-1"></i> Tóm tắt
                     </button>
-                    <button onclick="switchTab('cache')" class="tab-btn py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap">
-                        <i class="fas fa-database mr-1 sm:mr-2"></i>
-                        <span class="hidden sm:inline">Cache</span>
-                        <span class="sm:hidden">Cache</span>
+                                <button onclick="switchTab('code')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-code mr-1"></i> Code
+                                </button>
+                                <button onclick="switchTab('flashcards')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-layer-group mr-1"></i> Flashcards
+                                </button>
+                                <button onclick="switchTab('quiz')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-question-circle mr-1"></i> Quiz
+                                </button>
+                                <button onclick="switchTab('study-plan')"
+                                    class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
+                                    <i class="fas fa-calendar-alt mr-1"></i> Kế hoạch
                     </button>
                 </nav>
             </div>
+                        <!-- Chat Tab (ChatGPT/Grok style) -->
+                        <div id="chat-tab" class="tab-content">
+                            <div
+                                class="h-[70vh] sm:h-[65vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col overflow-hidden">
+                                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur">
+                                    <div class="flex items-start space-x-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shrink-0">
+                                            IR</div>
+                                        <div
+                                            class="max-w-[85%] sm:max-w-[70%] bg-white/70 dark:bg-gray-700/70 text-gray-800 dark:text-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow border border-gray-200/60 dark:border-gray-700/60">
+                                            Chào bạn! Mình là I.R.I.S. Hãy nhắn bất kỳ câu hỏi học tập nào nhé.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur">
+                                    <div class="flex items-end space-x-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur px-2 py-1.5">
+                                        <textarea id="chat-input" rows="1"
+                                            placeholder="Nhập tin nhắn... (Enter để gửi, Shift+Enter để xuống dòng)"
+                                            class="flex-1 resize-none max-h-40 w-full p-2 focus:ring-0 focus:outline-none bg-transparent text-sm sm:text-base text-gray-900 dark:text-white"></textarea>
+                                        <button id="chat-send" onclick="handleChatSend()"
+                                            class="bg-primary text-white px-4 py-2.5 rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- Tab Content -->
-            <div class="p-4 sm:p-6">
                 <!-- Explain Tab -->
-                <div id="explain-tab" class="tab-content">
+                        <div id="explain-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Câu hỏi cần giải thích</label>
-                            <textarea id="explain-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Câu
+                                        hỏi cần giải thích</label>
+                                    <textarea id="explain-input"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
                         </div>
-                        <button onclick="handleExplain()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleExplain()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-magic mr-2"></i>Giải thích
                         </button>
-                        <div id="explain-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
+                                <div id="explain-result"
+                                    class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
+                                </div>
                     </div>
                 </div>
 
@@ -119,22 +210,30 @@
                 <div id="summarize-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Văn bản cần tóm tắt</label>
-                            <textarea id="summarize-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Văn
+                                        bản cần tóm tắt</label>
+                                    <textarea id="summarize-input"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tỷ lệ tóm tắt (%)</label>
-                            <input type="range" id="summarize-ratio" min="20" max="80" value="40" class="w-full">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tỷ lệ
+                                        tóm tắt (%)</label>
+                                    <input type="range" id="summarize-ratio" min="20" max="80" value="40"
+                                        class="w-full">
                             <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 <span>20%</span>
                                 <span id="ratio-value">40%</span>
                                 <span>80%</span>
                             </div>
                         </div>
-                        <button onclick="handleSummarize()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleSummarize()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
                         </button>
-                        <div id="summarize-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
+                                <div id="summarize-result"
+                                    class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
+                                </div>
                     </div>
                 </div>
 
@@ -142,8 +241,10 @@
                 <div id="code-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ngôn ngữ lập trình</label>
-                            <select id="code-language" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ngôn
+                                        ngữ lập trình</label>
+                                    <select id="code-language"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                                 <option value="python">Python</option>
                                 <option value="javascript">JavaScript</option>
                                 <option value="java">Java</option>
@@ -153,13 +254,19 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Code cần giải thích</label>
-                            <textarea id="code-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="8" placeholder="Nhập code cần giải thích..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Code
+                                        cần giải thích</label>
+                                    <textarea id="code-input"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="8" placeholder="Nhập code cần giải thích..."></textarea>
                         </div>
-                        <button onclick="handleExplainCode()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleExplainCode()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-code mr-2"></i>Giải thích Code
                         </button>
-                        <div id="code-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
+                                <div id="code-result"
+                                    class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
+                                </div>
                     </div>
                 </div>
 
@@ -167,14 +274,20 @@
                 <div id="flashcards-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội dung học tập</label>
-                            <textarea id="flashcards-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội
+                                        dung học tập</label>
+                                    <textarea id="flashcards-input"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số lượng flashcards</label>
-                            <input type="number" id="flashcards-count" min="1" max="10" value="5" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
+                                        lượng flashcards</label>
+                                    <input type="number" id="flashcards-count" min="1" max="10" value="5"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                         </div>
-                        <button onclick="handleFlashcards()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleFlashcards()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-cards-blank mr-2"></i>Tạo Flashcards
                         </button>
                         <div id="flashcards-result" class="hidden space-y-4"></div>
@@ -185,14 +298,20 @@
                 <div id="quiz-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội dung học tập</label>
-                            <textarea id="quiz-input" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội
+                                        dung học tập</label>
+                                    <textarea id="quiz-input"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số câu hỏi</label>
-                            <input type="number" id="quiz-count" min="1" max="10" value="3" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
+                                        câu hỏi</label>
+                                    <input type="number" id="quiz-count" min="1" max="10" value="3"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                         </div>
-                        <button onclick="handleQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleQuiz()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-question-circle mr-2"></i>Tạo Quiz
                         </button>
                         <div id="quiz-result" class="hidden space-y-4"></div>
@@ -203,65 +322,86 @@
                 <div id="study-plan-tab" class="tab-content hidden">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục tiêu học tập</label>
-                            <textarea id="study-goal" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200" rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục
+                                        tiêu học tập</label>
+                                    <textarea id="study-goal"
+                                        class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+                                        rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số ngày</label>
-                                <input type="number" id="study-days" min="1" max="365" value="7" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
+                                            ngày</label>
+                                        <input type="number" id="study-days" min="1" max="365" value="7"
+                                            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Giờ/ngày</label>
-                                <input type="number" id="study-hours" min="1" max="12" value="2" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Giờ/ngày</label>
+                                        <input type="number" id="study-hours" min="1" max="12" value="2"
+                                            class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
                             </div>
                         </div>
-                        <button onclick="handleStudyPlan()" class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
+                                <button onclick="handleStudyPlan()"
+                                    class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
                             <i class="fas fa-calendar-alt mr-2"></i>Tạo Kế hoạch
                         </button>
-                        <div id="study-plan-result" class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200"></div>
+                                <div id="study-plan-result"
+                                    class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
+                                </div>
                     </div>
                 </div>
 
                 <!-- Cache Management Tab -->
                 <div id="cache-tab" class="tab-content hidden">
                     <div class="space-y-6">
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
-                            <h3 class="text-base sm:text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                                <div
+                                    class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
+                                    <h3
+                                        class="text-base sm:text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">
                                 <i class="fas fa-info-circle mr-2"></i>Quản lý Cache
                             </h3>
                             <p class="text-blue-700 dark:text-blue-400 text-sm">
-                                Cache giúp lưu trữ các câu trả lời từ AI để tái sử dụng, tiết kiệm token và tăng tốc độ phản hồi.
+                                        Cache giúp lưu trữ các câu trả lời từ AI để tái sử dụng, tiết kiệm token và tăng
+                                        tốc độ phản hồi.
                             </p>
                         </div>
                         
                         <!-- Cache Statistics -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
+                                    <div
+                                        class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">Tổng số cache</p>
-                                        <p id="total-cache" class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">-</p>
+                                                <p id="total-cache"
+                                                    class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                                    -</p>
                                     </div>
                                     <i class="fas fa-database text-blue-500 text-lg sm:text-xl"></i>
                                 </div>
                             </div>
                             
-                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
+                                    <div
+                                        class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">Cache hits</p>
-                                        <p id="cache-hits" class="text-xl sm:text-2xl font-bold text-green-600">-</p>
+                                                <p id="cache-hits" class="text-xl sm:text-2xl font-bold text-green-600">
+                                                    -</p>
                                     </div>
                                     <i class="fas fa-bullseye text-green-500 text-lg sm:text-xl"></i>
                                 </div>
                             </div>
                             
-                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:col-span-2 lg:col-span-1 transition-colors duration-200">
+                                    <div
+                                        class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:col-span-2 lg:col-span-1 transition-colors duration-200">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">Token tiết kiệm</p>
-                                        <p id="tokens-saved" class="text-xl sm:text-2xl font-bold text-purple-600">-</p>
+                                                <p id="tokens-saved"
+                                                    class="text-xl sm:text-2xl font-bold text-purple-600">-</p>
                                     </div>
                                     <i class="fas fa-coins text-purple-500 text-lg sm:text-xl"></i>
                                 </div>
@@ -269,26 +409,33 @@
                         </div>
                         
                         <!-- Cache Actions -->
-                        <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
-                            <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">Thao tác Cache</h4>
+                                <div
+                                    class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
+                                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                        Thao tác Cache</h4>
                             <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-                                <button onclick="loadCacheStats()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center text-sm sm:text-base">
+                                        <button onclick="loadCacheStats()"
+                                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-sync-alt mr-2"></i>Làm mới thống kê
                                 </button>
                                 
-                                <button onclick="clearExpiredCache()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm sm:text-base">
+                                        <button onclick="clearExpiredCache()"
+                                            class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-clock mr-2"></i>Xóa cache hết hạn
                                 </button>
                                 
-                                <button onclick="clearAllCache()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center text-sm sm:text-base">
+                                        <button onclick="clearAllCache()"
+                                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center text-sm sm:text-base">
                                     <i class="fas fa-trash mr-2"></i>Xóa toàn bộ cache
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Cache Details -->
-                        <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
-                            <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">Chi tiết Cache</h4>
+                                <div
+                                    class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
+                                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                        Chi tiết Cache</h4>
                             <div id="cache-details" class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                                 <p>Nhấn "Làm mới thống kê" để xem chi tiết cache...</p>
                             </div>
@@ -298,10 +445,14 @@
             </div>
         </div>
     </main>
+        </div>
+    </div>
 
     <!-- Loading Modal -->
-    <div id="loading-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 flex items-center space-x-3 sm:space-x-4 max-w-sm w-full transition-colors duration-200">
+    <div id="loading-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 flex items-center space-x-3 sm:space-x-4 max-w-sm w-full transition-colors duration-200">
             <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
             <span class="text-gray-700 dark:text-gray-300 text-sm sm:text-base">Đang xử lý...</span>
         </div>
@@ -338,42 +489,222 @@
             }
         }
 
-        // Tab switching
+        // Section switching driven by sidebar
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });
             
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-primary', 'text-primary');
-                btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400', 'hover:text-gray-700', 'dark:hover:text-gray-300', 'hover:border-gray-300', 'dark:hover:border-gray-600');
-            });
-            
             document.getElementById(tabName + '-tab').classList.remove('hidden');
-            
-            event.target.classList.add('active', 'border-primary', 'text-primary');
-            event.target.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
             
             const ratioSlider = document.getElementById('summarize-ratio');
             const ratioValue = document.getElementById('ratio-value');
-            ratioSlider.addEventListener('input', function() {
+            ratioSlider.addEventListener('input', function () {
                 ratioValue.textContent = this.value + '%';
             });
             
             if (tabName === 'cache') {
                 loadCacheStats();
             }
+            if (tabName === 'chat') {
+                focusChatInput();
+            }
+
+            // Sidebar active state (do not depend on global event)
+            document.querySelectorAll('.side-item').forEach(btn => btn.classList.remove('bg-gray-100', 'dark:bg-gray-700'));
+            const activeSelector = `[onclick="switchTab('${tabName}')"]`;
+            const activeBtn = document.querySelector(activeSelector);
+            if (activeBtn) activeBtn.classList.add('bg-gray-100', 'dark:bg-gray-700');
+
+            // Title/subtitle
+            const title = document.getElementById('section-title');
+            const subtitle = document.getElementById('section-subtitle');
+            const map = {
+                'chat': ['AI Chat', 'Free-form assistant for guidance, motivation, and answers.'],
+                'explain': ['Study Tools', 'Get structured study assistance starting with Explain.'],
+                'summarize': ['Study Tools', 'Summarize long text quickly.'],
+                'code': ['Study Tools', 'Explain code and snippets.'],
+                'flashcards': ['Study Tools', 'Generate study cards.'],
+                'quiz': ['Study Tools', 'Create quizzes from content.'],
+                'study-plan': ['Study Tools', 'Create learning plans.'],
+                'cache': ['Cache Manager', 'View and manage cached results.']
+            };
+            const [t, s] = map[tabName] || ['I.R.I.S', ''];
+            title.textContent = t;
+            subtitle.textContent = s;
+
+            // Show/hide study internal tabs
+            const studyTabs = document.getElementById('study-tabs');
+            if (['explain', 'summarize', 'code', 'flashcards', 'quiz', 'study-plan'].includes(tabName)) {
+                studyTabs.classList.remove('hidden');
+                document.querySelectorAll('.study-tab-btn').forEach(b => b.classList.remove('border-primary', 'text-gray-900', 'dark:text-white'));
+                // Mark the active study tab
+                const idx = ['explain', 'summarize', 'code', 'flashcards', 'quiz', 'study-plan'].indexOf(tabName);
+                const btn = document.querySelectorAll('.study-tab-btn')[idx];
+                if (btn) btn.classList.add('border-primary', 'text-gray-900', 'dark:text-white');
+            } else {
+                studyTabs.classList.add('hidden');
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initTheme();
-            
-            const activeBtn = document.querySelector('.tab-btn.active');
-            activeBtn.classList.add('border-primary', 'text-primary');
-            activeBtn.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
-            
+            switchTab('chat');
             loadCacheStats();
+
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                // Xử lý sự kiện keydown cho Enter
+                chatInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.code === 'Enter' || e.keyCode === 13) {
+                        console.log('Enter pressed - sending message');
+                        e.preventDefault(); // Ngăn hành vi mặc định (xuống dòng)
+                        handleChatSend();
+                    }
+                });
+
+                // Dự phòng với sự kiện keypress
+                chatInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter' || e.code === 'Enter' || e.keyCode === 13) {
+                        console.log('Enter pressed in keypress - sending message');
+                        e.preventDefault();
+                        handleChatSend();
+                    }
+                });
+
+                // Điều chỉnh kích thước textarea khi nhập liệu
+                chatInput.addEventListener('input', function () {
+                    autoResizeTextarea(chatInput);
+                });
+
+                // Khởi tạo kích thước textarea
+                autoResizeTextarea(chatInput);
+            }
+
+            hydrateRecentConversations();
+            applyRoleVisibility();
+            // Settings dropdown toggle
+            // Also support inline onclick handler
         });
+
+        function toggleSettings(event){
+            const menu = document.getElementById('settings-menu');
+            if (!menu) return;
+            event && event.stopPropagation();
+            menu.classList.toggle('hidden');
+            document.addEventListener('click', function hideOnce(){
+                if (!menu.classList.contains('hidden')) menu.classList.add('hidden');
+                document.removeEventListener('click', hideOnce);
+            });
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+        }
+
+        function focusChatInput() {
+            const input = document.getElementById('chat-input');
+            if (input) input.focus();
+        }
+
+        // Sidebar state (localStorage)
+        const RECENT_KEY = 'iris_recent_chats';
+        function newChat() {
+            const container = document.getElementById('chat-messages');
+            if (container) container.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shrink-0">IR</div>
+                    <div class="max-w-[85%] sm:max-w-[70%] bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+                        Bắt đầu cuộc trò chuyện mới. Hãy nói xin chào!
+                    </div>
+                </div>`;
+            focusChatInput();
+        }
+
+        function saveConversationSnippet(text) {
+            try {
+                const list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+                const title = (text || 'New Conversation').slice(0, 60);
+                list.unshift({ title, at: Date.now() });
+                const unique = [];
+                const seen = new Set();
+                for (const item of list) {
+                    if (seen.has(item.title)) continue;
+                    seen.add(item.title);
+                    unique.push(item);
+                    if (unique.length >= 10) break;
+                }
+                localStorage.setItem(RECENT_KEY, JSON.stringify(unique));
+                hydrateRecentConversations();
+            } catch { }
+        }
+
+        function hydrateRecentConversations() {
+            const box = document.getElementById('recent-conversations');
+            if (!box) return;
+            fetch('/api/conversations').then(r=>r.json()).then(data=>{
+                const items = (data && data.items) || [];
+                if (!items.length) {
+                    box.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No conversations yet.</p>';
+                    return;
+                }
+                box.innerHTML = items.map(it=>`
+                    <div class="group flex items-center justify-between gap-2 px-2 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <button onclick="selectConversation(${it.id})" class="flex-1 text-left truncate">${it.title || ('Conversation ' + it.id)}</button>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                            <button type="button" title="Rename" onclick="renameConversation(${it.id})" class="px-2 py-0.5 text-xs border rounded">Edit</button>
+                            <button type="button" title="Delete" onclick="deleteConversation(${it.id})" class="px-2 py-0.5 text-xs border rounded text-red-600">Del</button>
+                        </div>
+                    </div>
+                `).join('');
+            }).catch(()=>{
+                box.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No conversations yet.</p>';
+            });
+        }
+
+        async function renameConversation(id){
+            try {
+                const title = prompt('Nhập tiêu đề mới:');
+                if (!title) return;
+                const r = await fetch('/api/conversations/rename', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ conv_id:id, title }) });
+                if (!r.ok) {
+                    const t = await r.text();
+                    alert('Rename failed: ' + t);
+                    return;
+                }
+                hydrateRecentConversations();
+            } catch (e) {
+                alert('Rename error: ' + e.message);
+            }
+        }
+
+        async function deleteConversation(id){
+            try {
+                if (!confirm('Xóa hội thoại này?')) return;
+                const r = await fetch('/api/conversations/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ conv_id:id }) });
+                if (!r.ok) {
+                    const t = await r.text();
+                    alert('Delete failed: ' + t);
+                    return;
+                }
+                hydrateRecentConversations();
+                newChat();
+            } catch (e) {
+                alert('Delete error: ' + e.message);
+            }
+        }
+
+        // Hide cache for non-admin
+        function applyRoleVisibility() {
+            try {
+                const roleMeta = document.body.getAttribute('data-role') || 'user';
+                const btn = document.getElementById('side-cache');
+                if (roleMeta !== 'admin' && btn) {
+                    btn.style.display = 'none';
+                }
+            } catch { }
+        }
 
         function formatResponse(text) {
             if (!text) return '';
@@ -385,12 +716,15 @@
                 // Italic text: *text* or _text_
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/_(.*?)_/g, '<em>$1</em>')
-                // Headers: ### Header
-                .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>')
-                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold text-gray-800 mt-4 mb-2">$1</h2>')
-                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold text-gray-800 mt-4 mb-2">$1</h1>')
-                // Lists: - item or * item
-                .replace(/^[\-\*] (.*$)/gm, '<li class="ml-4 mb-1">• $1</li>')
+                // Headers: ###### to #
+                .replace(/^######\s+(.*)$/gm, '<h6 class="text-sm font-semibold text-gray-800 mt-3 mb-1">$1</h6>')
+                .replace(/^#####\s+(.*)$/gm, '<h5 class="text-base font-semibold text-gray-800 mt-3 mb-1">$1</h5>')
+                .replace(/^####\s+(.*)$/gm, '<h4 class="text-lg font-semibold text-gray-800 mt-3 mb-1">$1</h4>')
+                .replace(/^###\s+(.*)$/gm, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>')
+                .replace(/^##\s+(.*)$/gm, '<h2 class="text-xl font-semibold text-gray-800 mt-4 mb-2">$1</h2>')
+                .replace(/^#\s+(.*)$/gm, '<h1 class="text-2xl font-bold text-gray-800 mt-4 mb-2">$1</h1>')
+                // Lists: - item or * item (use browser bullet, no extra dot)
+                .replace(/^[\-\*] (.*$)/gm, '<li class="ml-4 mb-1">$1</li>')
                 // Numbers: 1. item
                 .replace(/^\d+\. (.*$)/gm, '<li class="ml-4 mb-1 list-decimal">$1</li>')
                 // Code blocks: `code`
@@ -431,6 +765,143 @@
                 modal.classList.add('hidden');
                 alert('Lỗi: ' + error.message);
                 return null;
+            }
+        }
+
+        function appendMessage(role, content) {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+            const isUser = role === 'user';
+            const row = document.createElement('div');
+            row.className = `flex items-start space-x-3 ${isUser ? 'justify-end' : ''}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = `w-8 h-8 rounded-full ${isUser ? 'bg-gray-900 dark:bg-gray-100' : 'bg-gradient-to-br from-primary to-secondary'} text-white dark:text-gray-900 flex items-center justify-center shrink-0`;
+            avatar.innerHTML = isUser ? '<i class="fas fa-user text-xs"></i>' : 'IR';
+
+            const bubble = document.createElement('div');
+            bubble.className = `${isUser ? 'bg-primary text-white rounded-2xl rounded-tr-sm' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm'} max-w-[85%] sm:max-w-[70%] px-4 py-3 shadow-sm`;
+            bubble.innerHTML = isUser ?
+                content.replace(/\n/g, '<br>') :
+                `<div class="prose max-w-none">${formatResponse(content)}</div>`;
+
+            if (isUser) {
+                row.appendChild(bubble);
+                row.appendChild(avatar);
+            } else {
+                row.appendChild(avatar);
+                row.appendChild(bubble);
+            }
+
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        let chatBusy = false;
+        function setChatBusy(busy) {
+            chatBusy = busy;
+            const btn = document.getElementById('chat-send');
+            if (btn) btn.disabled = busy;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const row = document.createElement('div');
+            row.id = 'typing-row';
+            row.className = 'flex items-start space-x-3';
+            row.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shrink-0">IR</div>
+                <div class="max-w-[85%] sm:max-w-[70%] bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+                    <span class="inline-flex space-x-1">
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: .1s;"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: .2s;"></span>
+                    </span>
+                </div>`;
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const row = document.getElementById('typing-row');
+            if (row && row.parentNode) row.parentNode.removeChild(row);
+        }
+
+        async function handleChatSend() {
+            if (chatBusy) return;
+            const input = document.getElementById('chat-input');
+            const text = (input?.value || '').trim();
+            if (!text) return;
+
+            appendMessage('user', text);
+            saveConversationSnippet(text);
+            input.value = '';
+            autoResizeTextarea(input);
+            setChatBusy(true);
+            addTypingIndicator();
+
+            try {
+                // Stream via SSE
+                const resp = await fetch('/api/chat/stream', { 
+                    method:'POST', 
+                    headers:{
+                        'Content-Type':'application/json',
+                        'Accept':'text/event-stream'
+                    }, 
+                    body: JSON.stringify({ message: text }) 
+                });
+                if (!resp.ok || !resp.body){
+                    removeTypingIndicator();
+                    const errText = await resp.text();
+                    appendMessage('assistant', 'Có lỗi xảy ra: ' + (errText || resp.status));
+                    return;
+                }
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                removeTypingIndicator();
+                appendMessage('assistant', '');
+                const container = document.getElementById('chat-messages');
+                const lastRow = container.lastElementChild;
+                let lastBubble = lastRow.querySelector('.prose');
+                if (!lastBubble){
+                    lastBubble = document.createElement('div');
+                    lastBubble.className = 'prose max-w-none';
+                    lastRow.appendChild(lastBubble);
+                }
+                let assistantText = '';
+                let buffer = '';
+                while (true){
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, {stream: true});
+                    const parts = buffer.split('\n\n');
+                    buffer = parts.pop() || '';
+                    for (const ev of parts){
+                        const line = ev.trim();
+                        if (!line.startsWith('data:')) continue;
+                        let payload;
+                        try { payload = JSON.parse(line.slice(5).trim()); } catch { continue; }
+                        if (payload.delta){
+                            assistantText += payload.delta;
+                            lastBubble.innerHTML = `${formatResponse(assistantText)}`;
+                            container.scrollTop = container.scrollHeight;
+                        }
+                    }
+                }
+                // Fallback: if nothing streamed, call non-stream API once
+                if (!assistantText) {
+                    const res = await makeAPICall('chat', { message: text });
+                    if (res && res.result) {
+                        lastBubble.innerHTML = `${formatResponse(res.result)}`;
+                    } else {
+                        lastBubble.innerHTML = 'Xin lỗi, có lỗi xảy ra.';
+                    }
+                }
+            } catch (e) {
+                removeTypingIndicator();
+                appendMessage('assistant', 'Xin lỗi, có lỗi xảy ra.');
+            } finally {
+                setChatBusy(false);
             }
         }
 
@@ -757,18 +1228,25 @@
                 const stats = await response.json();
                 
                 if (response.ok) {
-                    document.getElementById('total-cache').textContent = stats.total_entries || 0;
-                    document.getElementById('cache-hits').textContent = stats.cache_hits || 0;
-                    document.getElementById('tokens-saved').textContent = (stats.tokens_saved || 0).toLocaleString();
-                    document.getElementById('cache-count').textContent = stats.total_entries || 0;
+                    const elTotal = document.getElementById('total-cache');
+                    const elHits = document.getElementById('cache-hits');
+                    const elTokens = document.getElementById('tokens-saved');
+                    const elCount = document.getElementById('cache-count');
+                    if (elTotal) elTotal.textContent = stats.total_entries || 0;
+                    if (elHits) elHits.textContent = stats.cache_hits || stats.total_hits || 0;
+                    if (elTokens) elTokens.textContent = ((stats.tokens_saved || 0)).toLocaleString();
+                    if (elCount) elCount.textContent = stats.total_entries || 0;
                     
                     const detailsDiv = document.getElementById('cache-details');
                     let detailsHtml = '';
                     
-                    if (stats.by_function && Object.keys(stats.by_function).length > 0) {
+                    const byFunc = stats.by_function || stats.function_stats || {};
+                    if (byFunc && Object.keys(byFunc).length > 0) {
                         detailsHtml += '<h5 class="font-medium text-gray-700 mb-2">Cache theo chức năng:</h5>';
-                        for (const [func, count] of Object.entries(stats.by_function)) {
-                            detailsHtml += `<p>• ${func}: ${count} entries</p>`;
+                        for (const [func, val] of Object.entries(byFunc)) {
+                            const count = typeof val === 'object' ? (val.entries || val.count || 0) : val;
+                            const hits = typeof val === 'object' ? (val.hits || 0) : 0;
+                            detailsHtml += `<p>• ${func}: ${count} entries${hits?`, ${hits} hits`:''}</p>`;
                         }
                     }
                     
@@ -780,13 +1258,13 @@
                         detailsHtml += `<p><strong>Entry mới nhất:</strong> ${new Date(stats.newest_entry).toLocaleString('vi-VN')}</p>`;
                     }
                     
-                    detailsDiv.innerHTML = detailsHtml || '<p>Không có dữ liệu cache.</p>';
+                    if (detailsDiv) detailsDiv.innerHTML = detailsHtml || '<p>Không có dữ liệu cache.</p>';
                 } else {
                     alert('Lỗi khi tải thống kê cache: ' + (stats.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('[v0] Cache stats error:', error);
-                alert('Lỗi khi tải thống kê cache: ' + error.message);
+                showToast('Lỗi khi tải thống kê cache');
             }
         }
         
@@ -798,14 +1276,14 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    alert('Đã xóa cache hết hạn thành công!');
+                    showToast('Đã xóa cache hết hạn');
                     loadCacheStats();
                 } else {
-                    alert('Lỗi: ' + (result.error || 'Unknown error'));
+                    showToast('Lỗi khi xóa cache hết hạn');
                 }
             } catch (error) {
                 console.error('[v0] Clear expired cache error:', error);
-                alert('Lỗi khi xóa cache hết hạn: ' + error.message);
+                showToast('Lỗi khi xóa cache hết hạn');
             }
         }
         
@@ -817,45 +1295,55 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    alert('Đã xóa toàn bộ cache thành công!');
+                    showToast('Đã xóa toàn bộ cache');
                     loadCacheStats();
                 } else {
-                    alert('Lỗi: ' + (result.error || 'Unknown error'));
+                    showToast('Lỗi khi xóa toàn bộ cache');
                 }
             } catch (error) {
                 console.error('[v0] Clear all cache error:', error);
-                alert('Lỗi khi xóa toàn bộ cache: ' + error.message);
+                showToast('Lỗi khi xóa toàn bộ cache');
             }
         }
     </script>
 
     <style>
+        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; }
         .flashcard {
             cursor: pointer;
             transition: transform 0.2s;
         }
+
         .flashcard:hover {
             transform: translateY(-2px);
         }
+
         .tab-btn.active {
             border-color: #6366f1 !important;
             color: #6366f1 !important;
         }
+
         .prose {
             line-height: 1.6;
         }
-        .prose h1, .prose h2, .prose h3 {
+
+        .prose h1,
+        .prose h2,
+        .prose h3 {
             margin-top: 1rem;
             margin-bottom: 0.5rem;
         }
+
         .prose strong {
             font-weight: 600;
             color: #374151;
         }
+
         .prose em {
             font-style: italic;
             color: #4b5563;
         }
+
         .prose code {
             background-color: #f3f4f6;
             padding: 0.125rem 0.5rem;
@@ -863,6 +1351,7 @@
             font-family: 'Courier New', monospace;
             font-size: 0.875rem;
         }
+
         .prose li {
             margin-bottom: 0.25rem;
         }
@@ -870,9 +1359,11 @@
         .dark .prose strong {
             color: #d1d5db;
         }
+
         .dark .prose em {
             color: #9ca3af;
         }
+
         .dark .prose code {
             background-color: #374151;
             color: #e5e7eb;
@@ -905,7 +1396,9 @@
             outline-offset: 2px;
         }
         
-        textarea:focus, input:focus, select:focus {
+        textarea:focus,
+        input:focus,
+        select:focus {
             outline: none;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
@@ -915,4 +1408,5 @@
         }
     </style>
 </body>
+
 </html>
