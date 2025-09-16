@@ -5,6 +5,14 @@ body {
     transition: colors 0.3s ease;
 }
 
+/* Prevent layout overflow and make media responsive */
+* { box-sizing: border-box; }
+img, video, canvas, iframe { max-width: 100%; height: auto; }
+table { max-width: 100%; display: block; overflow-x: auto; }
+pre, code, kbd, samp { max-width: 100%; }
+pre { white-space: pre-wrap; word-break: break-word; }
+.prose, .prose * { overflow-wrap: anywhere; word-break: break-word; }
+
 /* Header styles */
 header {
     transition: colors 0.3s ease;
@@ -55,6 +63,9 @@ header {
         max-width: 100vw;
         overflow-x: hidden;
     }
+
+    /* Contain any wide child content inside main card */
+    main, .tab-content, #chat-container, #study-tabs { overflow-x: clip; }
 
     /* Use dynamic viewport height to avoid URL bar overlap */
     #chat-container {
