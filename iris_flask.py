@@ -599,7 +599,11 @@ def api_chat():
                 if desc:
                     extracted_blocks.append(desc)
             if extracted_blocks:
-                message = f"{message}\n\n".join([m for m in [message] if m]) + ("\n\n" if message else "") + "\n\n".join(extracted_blocks)
+                parts = []
+                if message:
+                    parts.append(message)
+                parts.extend(extracted_blocks)
+                message = "\n\n".join(parts)
             # Do not pass files further; already merged into message
             files = []
         else:
@@ -646,7 +650,11 @@ def api_chat_stream():
                 if desc:
                     extracted_blocks.append(desc)
             if extracted_blocks:
-                message = f"{message}\n\n".join([m for m in [message] if m]) + ("\n\n" if message else "") + "\n\n".join(extracted_blocks)
+                parts = []
+                if message:
+                    parts.append(message)
+                parts.extend(extracted_blocks)
+                message = "\n\n".join(parts)
             files = []
         else:
             data = request.get_json(force=True, silent=True) or {}

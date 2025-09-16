@@ -48,6 +48,28 @@ header {
     scroll-behavior: smooth;
 }
 
+/* Mobile improvements */
+@media (max-width: 640px) {
+    /* Use dynamic viewport height to avoid URL bar overlap */
+    #chat-container {
+        height: calc(100dvh - 7rem);
+    }
+    /* Keep input bar visible above soft keyboard */
+    #chat-input-bar {
+        position: sticky;
+        bottom: 0;
+        z-index: 20;
+    }
+    /* Larger touch targets */
+    #chat-input {
+        font-size: 16px; /* prevent iOS zoom */
+    }
+    #chat-send, #attach-file-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
 /* Settings menu */
 #settings-menu {
     transition: opacity 0.2s ease, transform 0.2s ease;
