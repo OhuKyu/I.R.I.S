@@ -24,6 +24,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <style>
+        .file-upload-dragover {
+            border-color: #3b82f6 !important;
+            background-color: #dbeafe !important;
+        }
+        .file-item {
+            transition: all 0.2s ease;
+        }
+        .file-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .file-remove-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .file-item:hover .file-remove-btn {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body class="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300"
@@ -50,24 +71,29 @@
                         title="Toggle theme">
                         <i id="theme-icon" class="fas fa-moon text-gray-600 dark:text-gray-300"></i>
                     </button>
-                    
+
                     <div class="relative">
-                        <button id="settings-btn" onclick="toggleSettings(event)" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600" title="Settings">
+                        <button id="settings-btn" onclick="toggleSettings(event)"
+                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                            title="Settings">
                             <i class="fas fa-gear text-gray-600 dark:text-gray-300"></i>
                         </button>
-                        <div id="settings-menu" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                        <div id="settings-menu"
+                            class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                             {% if role == 'admin' %}
-                            <a href="/admin" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <a href="/admin"
+                                class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <i class="fas fa-shield-halved"></i>
                                 <span>Admin Panel</span>
                             </a>
                             <div class="border-t border-gray-200 dark:border-gray-700"></div>
                             {% endif %}
-                            <a href="/logout" class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <a href="/logout"
+                                class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <i class="fas fa-right-from-bracket"></i>
                                 <span>Logout</span>
                             </a>
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,22 +107,24 @@
             <aside class="hidden md:block w-64 shrink-0">
                 <div class="sticky top-20 space-y-4">
                     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
-                        <button onclick="newChat()" class="w-full flex items-center justify-center gap-2 bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 py-2.5 rounded-lg hover:opacity-90">
+                        <button onclick="newChat()"
+                            class="w-full flex items-center justify-center gap-2 bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 py-2.5 rounded-lg hover:opacity-90">
                             <i class="fas fa-plus"></i>
                             <span>New Chat</span>
-                    </button>
+                        </button>
                     </div>
                     <nav class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2">
                         <button onclick="switchTab('chat')"
                             class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
                             <i class="fas fa-comments"></i>
                             <span>AI Chat</span>
-                    </button>
+                        </button>
                         <button onclick="switchTab('explain')"
                             class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
                             <i class="fas fa-screwdriver-wrench"></i>
                             <span>Study Tools</span>
-                    </button>
+                        </button>
+                        
                         {% if role == 'admin' %}
                         <!-- Removed Cache Manager and Admin Panel from sidebar (now in Settings) -->
                         {% endif %}
@@ -104,7 +132,7 @@
                             class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
                             <i class="fas fa-rotate-left"></i>
                             <span>History</span>
-                    </button>
+                        </button>
                     </nav>
                     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Recent Conversations
@@ -133,11 +161,11 @@
                                 <button onclick="switchTab('explain')"
                                     class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
                                     <i class="fas fa-lightbulb mr-1"></i> Giải thích
-                    </button>
+                                </button>
                                 <button onclick="switchTab('summarize')"
                                     class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
                                     <i class="fas fa-wand-magic-sparkles mr-1"></i> Tóm tắt
-                    </button>
+                                </button>
                                 <button onclick="switchTab('code')"
                                     class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
                                     <i class="fas fa-code mr-1"></i> Code
@@ -153,14 +181,15 @@
                                 <button onclick="switchTab('study-plan')"
                                     class="study-tab-btn py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap text-gray-600 dark:text-gray-300 border-transparent hover:text-gray-900 dark:hover:text-white">
                                     <i class="fas fa-calendar-alt mr-1"></i> Kế hoạch
-                    </button>
-                </nav>
-            </div>
+                                </button>
+                            </nav>
+                        </div>
                         <!-- Chat Tab (ChatGPT/Grok style) -->
                         <div id="chat-tab" class="tab-content">
                             <div
                                 class="h-[70vh] sm:h-[65vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col overflow-hidden">
-                                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur">
+                                <div id="chat-messages"
+                                    class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur">
                                     <div class="flex items-start space-x-3">
                                         <div
                                             class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shrink-0">
@@ -173,7 +202,29 @@
                                 </div>
                                 <div
                                     class="border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur">
-                                    <div class="flex items-end space-x-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur px-2 py-1.5">
+                                    
+                                    <!-- File Upload Area -->
+                                    <div id="file-upload-area" class="hidden mb-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                                        <div class="text-center">
+                                            <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Kéo thả file vào đây hoặc click để chọn</p>
+                                            <input type="file" id="file-input" multiple accept=".txt,.pdf,.doc,.docx,.rtf,.md,.py,.js,.html,.css,.json,.csv,.xlsx,.xls" class="hidden">
+                                            <button onclick="document.getElementById('file-input').click()" class="text-sm text-primary hover:text-primary-dark">
+                                                Chọn file
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Uploaded Files Preview -->
+                                    <div id="uploaded-files" class="hidden mb-3 space-y-2"></div>
+
+                                    <div
+                                        class="flex items-end space-x-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur px-2 py-1.5">
+                                        <button id="attach-file-btn" onclick="toggleFileUpload()" 
+                                            class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                                            title="Đính kèm file">
+                                            <i class="fas fa-paperclip"></i>
+                                        </button>
                                         <textarea id="chat-input" rows="1"
                                             placeholder="Nhập tin nhắn... (Enter để gửi, Shift+Enter để xuống dòng)"
                                             class="flex-1 resize-none max-h-40 w-full p-2 focus:ring-0 focus:outline-none bg-transparent text-sm sm:text-base text-gray-900 dark:text-white"></textarea>
@@ -186,265 +237,372 @@
                             </div>
                         </div>
 
-                <!-- Explain Tab -->
+                        <!-- Explain Tab -->
                         <div id="explain-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Câu
                                         hỏi cần giải thích</label>
                                     <textarea id="explain-input"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="4" placeholder="Nhập câu hỏi hoặc khái niệm cần giải thích..."></textarea>
-                        </div>
+                                </div>
                                 <button onclick="handleExplain()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-magic mr-2"></i>Giải thích
-                        </button>
+                                    <i class="fas fa-magic mr-2"></i>Giải thích
+                                </button>
                                 <div id="explain-result"
                                     class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
                                 </div>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- Summarize Tab -->
-                <div id="summarize-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                        <!-- Summarize Tab -->
+                        <div id="summarize-tab" class="tab-content hidden">
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Văn
                                         bản cần tóm tắt</label>
                                     <textarea id="summarize-input"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="6" placeholder="Nhập văn bản cần tóm tắt..."></textarea>
-                        </div>
-                        <div>
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tỷ lệ
                                         tóm tắt (%)</label>
                                     <input type="range" id="summarize-ratio" min="20" max="80" value="40"
                                         class="w-full">
-                            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                <span>20%</span>
-                                <span id="ratio-value">40%</span>
-                                <span>80%</span>
-                            </div>
-                        </div>
+                                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span>20%</span>
+                                        <span id="ratio-value">40%</span>
+                                        <span>80%</span>
+                                    </div>
+                                </div>
                                 <button onclick="handleSummarize()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
-                        </button>
+                                    <i class="fas fa-compress-alt mr-2"></i>Tóm tắt
+                                </button>
                                 <div id="summarize-result"
                                     class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
                                 </div>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- Code Tab -->
-                <div id="code-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                        <!-- Code Tab -->
+                        <div id="code-tab" class="tab-content hidden">
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ngôn
                                         ngữ lập trình</label>
                                     <select id="code-language"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
-                                <option value="python">Python</option>
-                                <option value="javascript">JavaScript</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                                <option value="html">HTML</option>
-                                <option value="css">CSS</option>
-                            </select>
-                        </div>
-                        <div>
+                                        <option value="python">Python</option>
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="java">Java</option>
+                                        <option value="cpp">C++</option>
+                                        <option value="html">HTML</option>
+                                        <option value="css">CSS</option>
+                                    </select>
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Code
                                         cần giải thích</label>
                                     <textarea id="code-input"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="8" placeholder="Nhập code cần giải thích..."></textarea>
-                        </div>
+                                </div>
                                 <button onclick="handleExplainCode()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-code mr-2"></i>Giải thích Code
-                        </button>
+                                    <i class="fas fa-code mr-2"></i>Giải thích Code
+                                </button>
                                 <div id="code-result"
                                     class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
                                 </div>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- Flashcards Tab -->
-                <div id="flashcards-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                        <!-- Flashcards Tab -->
+                        <div id="flashcards-tab" class="tab-content hidden">
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội
                                         dung học tập</label>
                                     <textarea id="flashcards-input"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="6" placeholder="Nhập nội dung để tạo flashcards..."></textarea>
-                        </div>
-                        <div>
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
                                         lượng flashcards</label>
                                     <input type="number" id="flashcards-count" min="1" max="10" value="5"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
-                        </div>
+                                </div>
                                 <button onclick="handleFlashcards()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-cards-blank mr-2"></i>Tạo Flashcards
-                        </button>
-                        <div id="flashcards-result" class="hidden space-y-4"></div>
-                    </div>
-                </div>
+                                    <i class="fas fa-cards-blank mr-2"></i>Tạo Flashcards
+                                </button>
+                                <div id="flashcards-result" class="hidden space-y-4"></div>
+                            </div>
+                        </div>
 
-                <!-- Quiz Tab -->
-                <div id="quiz-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                        <!-- Quiz Tab -->
+                        <div id="quiz-tab" class="tab-content hidden">
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nội
                                         dung học tập</label>
                                     <textarea id="quiz-input"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="6" placeholder="Nhập nội dung để tạo quiz..."></textarea>
-                        </div>
-                        <div>
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
                                         câu hỏi</label>
                                     <input type="number" id="quiz-count" min="1" max="10" value="3"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
-                        </div>
+                                </div>
                                 <button onclick="handleQuiz()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-question-circle mr-2"></i>Tạo Quiz
-                        </button>
-                        <div id="quiz-result" class="hidden space-y-4"></div>
-                    </div>
-                </div>
+                                    <i class="fas fa-question-circle mr-2"></i>Tạo Quiz
+                                </button>
+                                <div id="quiz-result" class="hidden space-y-4"></div>
+                            </div>
+                        </div>
 
-                <!-- Study Plan Tab -->
-                <div id="study-plan-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <div>
+                        <!-- Study Plan Tab -->
+                        <div id="study-plan-tab" class="tab-content hidden">
+                            <div class="space-y-4">
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục
                                         tiêu học tập</label>
                                     <textarea id="study-goal"
                                         class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
                                         rows="3" placeholder="Mô tả mục tiêu học tập của bạn..."></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Số
                                             ngày</label>
                                         <input type="number" id="study-days" min="1" max="365" value="7"
                                             class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
-                            </div>
-                            <div>
+                                    </div>
+                                    <div>
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Giờ/ngày</label>
                                         <input type="number" id="study-hours" min="1" max="12" value="2"
                                             class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200">
-                            </div>
-                        </div>
+                                    </div>
+                                </div>
                                 <button onclick="handleStudyPlan()"
                                     class="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center">
-                            <i class="fas fa-calendar-alt mr-2"></i>Tạo Kế hoạch
-                        </button>
+                                    <i class="fas fa-calendar-alt mr-2"></i>Tạo Kế hoạch
+                                </button>
                                 <div id="study-plan-result"
                                     class="hidden bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-l-4 border-primary transition-colors duration-200">
                                 </div>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <!-- Cache Management Tab -->
-                <div id="cache-tab" class="tab-content hidden">
-                    <div class="space-y-6">
+                        <!-- Cache Management Tab -->
+                        <div id="cache-tab" class="tab-content hidden">
+                            <div class="space-y-6">
                                 <div
                                     class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors duration-200">
                                     <h3
                                         class="text-base sm:text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                                <i class="fas fa-info-circle mr-2"></i>Quản lý Cache
-                            </h3>
-                            <p class="text-blue-700 dark:text-blue-400 text-sm">
+                                        <i class="fas fa-info-circle mr-2"></i>Quản lý Cache
+                                    </h3>
+                                    <p class="text-blue-700 dark:text-blue-400 text-sm">
                                         Cache giúp lưu trữ các câu trả lời từ AI để tái sử dụng, tiết kiệm token và tăng
                                         tốc độ phản hồi.
-                            </p>
-                        </div>
-                        
-                        <!-- Cache Statistics -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    </p>
+                                </div>
+
+                                <!-- Cache Statistics -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     <div
                                         class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">Tổng số cache</p>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Tổng số cache</p>
                                                 <p id="total-cache"
                                                     class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                                                     -</p>
+                                            </div>
+                                            <i class="fas fa-database text-blue-500 text-lg sm:text-xl"></i>
+                                        </div>
                                     </div>
-                                    <i class="fas fa-database text-blue-500 text-lg sm:text-xl"></i>
-                                </div>
-                            </div>
-                            
+
                                     <div
                                         class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">Cache hits</p>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Cache hits</p>
                                                 <p id="cache-hits" class="text-xl sm:text-2xl font-bold text-green-600">
                                                     -</p>
+                                            </div>
+                                            <i class="fas fa-bullseye text-green-500 text-lg sm:text-xl"></i>
+                                        </div>
                                     </div>
-                                    <i class="fas fa-bullseye text-green-500 text-lg sm:text-xl"></i>
-                                </div>
-                            </div>
-                            
+
                                     <div
                                         class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:col-span-2 lg:col-span-1 transition-colors duration-200">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">Token tiết kiệm</p>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">Token tiết kiệm</p>
                                                 <p id="tokens-saved"
                                                     class="text-xl sm:text-2xl font-bold text-purple-600">-</p>
+                                            </div>
+                                            <i class="fas fa-coins text-purple-500 text-lg sm:text-xl"></i>
+                                        </div>
                                     </div>
-                                    <i class="fas fa-coins text-purple-500 text-lg sm:text-xl"></i>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Cache Actions -->
+
+                                <!-- Cache Actions -->
                                 <div
                                     class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
                                     <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">
                                         Thao tác Cache</h4>
-                            <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                                    <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                                         <button onclick="loadCacheStats()"
                                             class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center text-sm sm:text-base">
-                                    <i class="fas fa-sync-alt mr-2"></i>Làm mới thống kê
-                                </button>
-                                
+                                            <i class="fas fa-sync-alt mr-2"></i>Làm mới thống kê
+                                        </button>
+
                                         <button onclick="clearExpiredCache()"
                                             class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm sm:text-base">
-                                    <i class="fas fa-clock mr-2"></i>Xóa cache hết hạn
-                                </button>
-                                
+                                            <i class="fas fa-clock mr-2"></i>Xóa cache hết hạn
+                                        </button>
+
                                         <button onclick="clearAllCache()"
                                             class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center text-sm sm:text-base">
-                                    <i class="fas fa-trash mr-2"></i>Xóa toàn bộ cache
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Cache Details -->
+                                            <i class="fas fa-trash mr-2"></i>Xóa toàn bộ cache
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Cache Details -->
                                 <div
                                     class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 transition-colors duration-200">
                                     <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">
                                         Chi tiết Cache</h4>
-                            <div id="cache-details" class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                                <p>Nhấn "Làm mới thống kê" để xem chi tiết cache...</p>
+                                    <div id="cache-details" class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                        <p>Nhấn "Làm mới thống kê" để xem chi tiết cache...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Manager Tab (removed) -->
+                        <div id="filemanager-tab" class="hidden">
+                            <div class="space-y-6">
+                                <div
+                                    class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800 transition-colors duration-200">
+                                    <h3
+                                        class="text-base sm:text-lg font-semibold text-green-800 dark:text-green-300 mb-2">
+                                        <i class="fas fa-folder-open mr-2"></i>File Manager
+                                    </h3>
+                                    <p class="text-green-700 dark:text-green-400 text-sm">
+                                        Quản lý, đọc và chỉnh sửa file trên hệ thống. Hỗ trợ nhiều loại file và code editor tích hợp.
+                                    </p>
+                                </div>
+
+                                <!-- File Operations Toolbar -->
+                                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        <button onclick="refreshFileList()" 
+                                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center text-sm">
+                                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                                        </button>
+                                        <button onclick="createNewFile()" 
+                                            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center text-sm">
+                                            <i class="fas fa-plus mr-2"></i>New File
+                                        </button>
+                                        <button onclick="createNewFolder()" 
+                                            class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors flex items-center text-sm">
+                                            <i class="fas fa-folder-plus mr-2"></i>New Folder
+                                        </button>
+                                        <button onclick="uploadFile()" 
+                                            class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center text-sm">
+                                            <i class="fas fa-upload mr-2"></i>Upload
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Current Path -->
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <i class="fas fa-folder text-gray-500"></i>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Current Path:</span>
+                                        <span id="current-path" class="text-sm font-mono bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded">/</span>
+                                    </div>
+                                </div>
+
+                                <!-- File List and Editor Layout -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <!-- File List Panel -->
+                                    <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
+                                        <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                            <i class="fas fa-list mr-2"></i>Files & Folders
+                                        </h4>
+                                        <div id="file-list" class="space-y-1 max-h-96 overflow-y-auto">
+                                            <div class="text-center text-gray-500 py-8">
+                                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                                <p>Loading files...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- File Editor Panel -->
+                                    <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-200">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">
+                                                <i class="fas fa-edit mr-2"></i>File Editor
+                                            </h4>
+                                            <div class="flex space-x-2">
+                                                <button onclick="saveCurrentFile()" id="save-btn" disabled
+                                                    class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                    <i class="fas fa-save mr-1"></i>Save
+                                                </button>
+                                                <button onclick="closeEditor()" 
+                                                    class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600">
+                                                    <i class="fas fa-times mr-1"></i>Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="file-editor-container" class="hidden">
+                                            <div class="mb-2">
+                                                <span class="text-sm text-gray-600 dark:text-gray-400">File:</span>
+                                                <span id="editing-file-name" class="text-sm font-mono bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded ml-2"></span>
+                                            </div>
+                                            <textarea id="file-editor" 
+                                                class="w-full h-80 p-3 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none"
+                                                placeholder="File content will appear here..."></textarea>
+                                        </div>
+                                        
+                                        <div id="no-file-selected" class="text-center text-gray-500 py-8">
+                                            <i class="fas fa-file-alt text-4xl mb-4"></i>
+                                            <p>Select a file to edit</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- File Upload Modal -->
+                                <div id="file-upload-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+                                        <h3 class="text-lg font-semibold mb-4">Upload File</h3>
+                                        <input type="file" id="file-upload-input" class="w-full mb-4">
+                                        <div class="flex justify-end space-x-2">
+                                            <button onclick="closeUploadModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                                            <button onclick="confirmUpload()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Upload</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
+            </main>
         </div>
     </div>
 
@@ -463,21 +621,21 @@
             const savedTheme = localStorage.getItem('theme') || 'light';
             const html = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
-            
+
             html.className = savedTheme;
-            
+
             if (savedTheme === 'dark') {
                 themeIcon.className = 'fas fa-sun text-gray-600 dark:text-gray-300';
             } else {
                 themeIcon.className = 'fas fa-moon text-gray-600 dark:text-gray-300';
             }
         }
-        
+
         function toggleTheme() {
             const html = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
             const currentTheme = html.className;
-            
+
             if (currentTheme === 'dark') {
                 html.className = 'light';
                 themeIcon.className = 'fas fa-moon text-gray-600 dark:text-gray-300';
@@ -494,18 +652,19 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });
-            
+
             document.getElementById(tabName + '-tab').classList.remove('hidden');
-            
+
             const ratioSlider = document.getElementById('summarize-ratio');
             const ratioValue = document.getElementById('ratio-value');
             ratioSlider.addEventListener('input', function () {
                 ratioValue.textContent = this.value + '%';
             });
-            
+
             if (tabName === 'cache') {
                 loadCacheStats();
             }
+            
             if (tabName === 'chat') {
                 focusChatInput();
             }
@@ -527,6 +686,7 @@
                 'flashcards': ['Study Tools', 'Generate study cards.'],
                 'quiz': ['Study Tools', 'Create quizzes from content.'],
                 'study-plan': ['Study Tools', 'Create learning plans.'],
+                
                 'cache': ['Cache Manager', 'View and manage cached results.']
             };
             const [t, s] = map[tabName] || ['I.R.I.S', ''];
@@ -587,12 +747,12 @@
             // Also support inline onclick handler
         });
 
-        function toggleSettings(event){
+        function toggleSettings(event) {
             const menu = document.getElementById('settings-menu');
             if (!menu) return;
             event && event.stopPropagation();
             menu.classList.toggle('hidden');
-            document.addEventListener('click', function hideOnce(){
+            document.addEventListener('click', function hideOnce() {
                 if (!menu.classList.contains('hidden')) menu.classList.add('hidden');
                 document.removeEventListener('click', hideOnce);
             });
@@ -608,6 +768,10 @@
             if (input) input.focus();
         }
 
+        // File upload state
+        let uploadedFiles = [];
+        let isFileUploadVisible = false;
+
         // Sidebar state (localStorage)
         const RECENT_KEY = 'iris_recent_chats';
         function newChat() {
@@ -619,7 +783,540 @@
                         Bắt đầu cuộc trò chuyện mới. Hãy nói xin chào!
                     </div>
                 </div>`;
+            
+            // Xóa file đã upload và ẩn file upload area
+            clearUploadedFiles();
+            const uploadArea = document.getElementById('file-upload-area');
+            if (uploadArea) uploadArea.classList.add('hidden');
+            isFileUploadVisible = false;
+            
+            // Cập nhật danh sách recent conversations
+            hydrateRecentConversations();
             focusChatInput();
+        }
+
+        // File upload functions
+        function toggleFileUpload() {
+            const uploadArea = document.getElementById('file-upload-area');
+            isFileUploadVisible = !isFileUploadVisible;
+            
+            if (isFileUploadVisible) {
+                uploadArea.classList.remove('hidden');
+                setupFileUploadHandlers();
+            } else {
+                uploadArea.classList.add('hidden');
+            }
+        }
+
+        function setupFileUploadHandlers() {
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('file-upload-area');
+
+            // File input change handler
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // Drag and drop handlers
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('file-upload-dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('file-upload-dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('file-upload-dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            files.forEach(file => {
+                if (validateFile(file)) {
+                    const fileObj = {
+                        id: Date.now() + Math.random(),
+                        file: file,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        content: null
+                    };
+                    uploadedFiles.push(fileObj);
+                    readFileContent(fileObj);
+                }
+            });
+            updateFilePreview();
+        }
+
+        function validateFile(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = [
+                'text/plain', 'text/markdown', 'text/csv',
+                'application/pdf', 'application/msword', 
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/json', 'text/javascript', 'text/html', 'text/css',
+                'application/x-python-code', 'text/x-python'
+            ];
+
+            if (file.size > maxSize) {
+                alert(`File ${file.name} quá lớn. Kích thước tối đa là 10MB.`);
+                return false;
+            }
+
+            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(txt|md|py|js|html|css|json|csv|pdf|doc|docx|xls|xlsx)$/i)) {
+                alert(`File ${file.name} không được hỗ trợ. Chỉ chấp nhận: txt, md, py, js, html, css, json, csv, pdf, doc, docx, xls, xlsx`);
+                return false;
+            }
+
+            return true;
+        }
+
+        function readFileContent(fileObj) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                fileObj.content = e.target.result;
+                updateFilePreview();
+            };
+            
+            reader.onerror = function() {
+                alert(`Không thể đọc file ${fileObj.name}`);
+                removeFile(fileObj.id);
+            };
+
+            // Đọc file dựa trên loại
+            if (fileObj.type.startsWith('text/') || fileObj.type === 'application/json') {
+                reader.readAsText(fileObj.file, 'UTF-8');
+            } else {
+                reader.readAsDataURL(fileObj.file);
+            }
+        }
+
+        function updateFilePreview() {
+            const container = document.getElementById('uploaded-files');
+            
+            if (uploadedFiles.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = uploadedFiles.map(fileObj => `
+                <div class="file-item bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-file text-gray-500"></i>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${fileObj.name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${formatFileSize(fileObj.size)}</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="removeFile('${fileObj.id}')" 
+                            class="file-remove-btn text-red-500 hover:text-red-700 p-1">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(fileId) {
+            uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
+            updateFilePreview();
+            if (uploadedFiles.length === 0) {
+                const container = document.getElementById('uploaded-files');
+                if (container) container.classList.add('hidden');
+            }
+        }
+        // Expose for inline onclick handlers
+        window.removeFile = removeFile;
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function clearUploadedFiles() {
+            uploadedFiles = [];
+            updateFilePreview();
+            document.getElementById('file-input').value = '';
+        }
+
+        // Encryption helpers for chat file uploads (AES-GCM)
+        let uploadCrypto = { key: null, raw: null, ready: false };
+        function base64ToBytes(b64) {
+            const bin = atob(b64);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return arr;
+        }
+        function bytesToBase64(bytes) {
+            let bin = '';
+            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+            return btoa(bin);
+        }
+        async function ensureUploadKey() {
+            if (uploadCrypto.ready) return;
+            const resp = await fetch('/api/upload_key');
+            if (!resp.ok) throw new Error('Failed to get upload key');
+            const data = await resp.json();
+            const raw = base64ToBytes(data.key);
+            const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
+            uploadCrypto = { key, raw, ready: true };
+        }
+        async function encryptTextGCM(plaintext) {
+            await ensureUploadKey();
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const enc = new TextEncoder().encode(plaintext || '');
+            const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, uploadCrypto.key, enc);
+            return { algo: 'AES-GCM', iv: bytesToBase64(iv), cipher: bytesToBase64(new Uint8Array(ct)) };
+        }
+        async function encryptFileForUpload(f) {
+            // Encrypt text, JSON, and PDF contents. Other types send metadata only.
+            if (f.type && (f.type.startsWith('text/') || f.type === 'application/json' || f.type === 'application/pdf')) {
+                const e = await encryptTextGCM(f.content || '');
+                return { name: f.name, type: f.type, size: f.size, ...e };
+            }
+            // Other file types: send metadata only (no content extraction)
+            return { name: f.name, type: f.type, size: f.size };
+        }
+
+        // File Manager Functions
+        const FILE_MANAGER_ENABLED = false;
+        let currentPath = '/';
+        let currentFile = null;
+        let fileList = [];
+
+        async function loadFileList() {
+            if (!FILE_MANAGER_ENABLED) return;
+            try {
+                const response = await fetch('/api/files/list', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: currentPath })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load file list');
+                }
+                
+                const data = await response.json();
+                fileList = data.files || [];
+                updateFileListDisplay();
+                updateCurrentPath();
+            } catch (error) {
+                console.error('Error loading file list:', error);
+                showFileError('Failed to load file list: ' + error.message);
+            }
+        }
+
+        function updateFileListDisplay() {
+            const container = document.getElementById('file-list');
+            if (!container) return;
+
+            if (fileList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-folder-open text-4xl mb-4"></i>
+                        <p>No files found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = fileList.map(item => `
+                <div class="file-item flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded cursor-pointer" 
+                     onclick="${item.type === 'directory' ? `navigateToFolder('${item.name}')` : `openFile('${item.name}')`}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas ${item.type === 'directory' ? 'fa-folder text-yellow-500' : getFileIcon(item.name)}"></i>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">${item.name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                ${item.type === 'directory' ? 'Folder' : formatFileSize(item.size)}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-1">
+                        ${item.type === 'file' ? `
+                            <button onclick="event.stopPropagation(); deleteFile('${item.name}')" 
+                                    class="text-red-500 hover:text-red-700 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'py': 'fa-file-code text-green-500',
+                'js': 'fa-file-code text-yellow-500',
+                'html': 'fa-file-code text-orange-500',
+                'css': 'fa-file-code text-blue-500',
+                'json': 'fa-file-code text-purple-500',
+                'txt': 'fa-file-alt text-gray-500',
+                'md': 'fa-file-alt text-blue-500',
+                'pdf': 'fa-file-pdf text-red-500',
+                'doc': 'fa-file-word text-blue-500',
+                'docx': 'fa-file-word text-blue-500',
+                'xls': 'fa-file-excel text-green-500',
+                'xlsx': 'fa-file-excel text-green-500',
+                'png': 'fa-file-image text-purple-500',
+                'jpg': 'fa-file-image text-purple-500',
+                'jpeg': 'fa-file-image text-purple-500',
+                'gif': 'fa-file-image text-purple-500'
+            };
+            return iconMap[ext] || 'fa-file text-gray-500';
+        }
+
+        async function navigateToFolder(folderName) {
+            currentPath = currentPath.endsWith('/') ? currentPath + folderName : currentPath + '/' + folderName;
+            await loadFileList();
+        }
+
+        async function openFile(filename) {
+            try {
+                const response = await fetch('/api/files/read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        path: currentPath.endsWith('/') ? currentPath + filename : currentPath + '/' + filename 
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to read file');
+                }
+                
+                const data = await response.json();
+                currentFile = {
+                    name: filename,
+                    path: currentPath.endsWith('/') ? currentPath + filename : currentPath + '/' + filename,
+                    content: data.content
+                };
+                
+                showFileEditor();
+            } catch (error) {
+                console.error('Error opening file:', error);
+                showFileError('Failed to open file: ' + error.message);
+            }
+        }
+
+        function showFileEditor() {
+            const editorContainer = document.getElementById('file-editor-container');
+            const noFileSelected = document.getElementById('no-file-selected');
+            const editor = document.getElementById('file-editor');
+            const fileName = document.getElementById('editing-file-name');
+            const saveBtn = document.getElementById('save-btn');
+
+            if (currentFile) {
+                editorContainer.classList.remove('hidden');
+                noFileSelected.classList.add('hidden');
+                editor.value = currentFile.content;
+                fileName.textContent = currentFile.name;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function closeEditor() {
+            const editorContainer = document.getElementById('file-editor-container');
+            const noFileSelected = document.getElementById('no-file-selected');
+            const saveBtn = document.getElementById('save-btn');
+
+            editorContainer.classList.add('hidden');
+            noFileSelected.classList.remove('hidden');
+            saveBtn.disabled = true;
+            currentFile = null;
+        }
+
+        async function saveCurrentFile() {
+            if (!currentFile) return;
+
+            try {
+                const editor = document.getElementById('file-editor');
+                const response = await fetch('/api/files/write', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: currentFile.path,
+                        content: editor.value
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save file');
+                }
+                
+                showFileSuccess('File saved successfully!');
+                currentFile.content = editor.value;
+            } catch (error) {
+                console.error('Error saving file:', error);
+                showFileError('Failed to save file: ' + error.message);
+            }
+        }
+
+        async function createNewFile() {
+            const filename = prompt('Enter filename:');
+            if (!filename) return;
+
+            try {
+                const response = await fetch('/api/files/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: currentPath.endsWith('/') ? currentPath + filename : currentPath + '/' + filename,
+                        type: 'file'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create file');
+                }
+                
+                showFileSuccess('File created successfully!');
+                await loadFileList();
+            } catch (error) {
+                console.error('Error creating file:', error);
+                showFileError('Failed to create file: ' + error.message);
+            }
+        }
+
+        async function createNewFolder() {
+            const folderName = prompt('Enter folder name:');
+            if (!folderName) return;
+
+            try {
+                const response = await fetch('/api/files/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: currentPath.endsWith('/') ? currentPath + folderName : currentPath + '/' + folderName,
+                        type: 'directory'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create folder');
+                }
+                
+                showFileSuccess('Folder created successfully!');
+                await loadFileList();
+            } catch (error) {
+                console.error('Error creating folder:', error);
+                showFileError('Failed to create folder: ' + error.message);
+            }
+        }
+
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete ${filename}?`)) return;
+
+            try {
+                const response = await fetch('/api/files/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: currentPath.endsWith('/') ? currentPath + filename : currentPath + '/' + filename
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to delete file');
+                }
+                
+                showFileSuccess('File deleted successfully!');
+                await loadFileList();
+            } catch (error) {
+                console.error('Error deleting file:', error);
+                showFileError('Failed to delete file: ' + error.message);
+            }
+        }
+
+        function uploadFile() {
+            document.getElementById('file-upload-modal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('file-upload-modal').classList.add('hidden');
+        }
+
+        async function confirmUpload() {
+            const input = document.getElementById('file-upload-input');
+            const file = input.files[0];
+            
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('path', currentPath);
+
+                const response = await fetch('/api/files/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to upload file');
+                }
+                
+                showFileSuccess('File uploaded successfully!');
+                closeUploadModal();
+                await loadFileList();
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                showFileError('Failed to upload file: ' + error.message);
+            }
+        }
+
+        function refreshFileList() {
+            loadFileList();
+        }
+
+        function updateCurrentPath() {
+            const pathElement = document.getElementById('current-path');
+            if (pathElement) {
+                pathElement.textContent = currentPath;
+            }
+        }
+
+        function showFileSuccess(message) {
+            // Simple success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function showFileError(message) {
+            // Simple error notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
         }
 
         function saveConversationSnippet(text) {
@@ -643,13 +1340,13 @@
         function hydrateRecentConversations() {
             const box = document.getElementById('recent-conversations');
             if (!box) return;
-            fetch('/api/conversations').then(r=>r.json()).then(data=>{
+            fetch('/api/conversations').then(r => r.json()).then(data => {
                 const items = (data && data.items) || [];
                 if (!items.length) {
                     box.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No conversations yet.</p>';
                     return;
                 }
-                box.innerHTML = items.map(it=>`
+                box.innerHTML = items.map(it => `
                     <div class="group flex items-center justify-between gap-2 px-2 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <button onclick="selectConversation(${it.id})" class="flex-1 text-left truncate">${it.title || ('Conversation ' + it.id)}</button>
                         <div class="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
@@ -658,16 +1355,16 @@
                         </div>
                     </div>
                 `).join('');
-            }).catch(()=>{
+            }).catch(() => {
                 box.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No conversations yet.</p>';
             });
         }
 
-        async function renameConversation(id){
+        async function renameConversation(id) {
             try {
                 const title = prompt('Nhập tiêu đề mới:');
                 if (!title) return;
-                const r = await fetch('/api/conversations/rename', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ conv_id:id, title }) });
+                const r = await fetch('/api/conversations/rename', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ conv_id: id, title }) });
                 if (!r.ok) {
                     const t = await r.text();
                     alert('Rename failed: ' + t);
@@ -679,19 +1376,94 @@
             }
         }
 
-        async function deleteConversation(id){
+        async function deleteConversation(id) {
             try {
                 if (!confirm('Xóa hội thoại này?')) return;
-                const r = await fetch('/api/conversations/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ conv_id:id }) });
+                const r = await fetch('/api/conversations/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ conv_id: id }) });
                 if (!r.ok) {
                     const t = await r.text();
                     alert('Delete failed: ' + t);
                     return;
                 }
+                
+                // Cập nhật danh sách recent conversations
                 hydrateRecentConversations();
+                
+                // Nếu đang xem cuộc trò chuyện bị xóa, chuyển về chat mới
                 newChat();
             } catch (e) {
                 alert('Delete error: ' + e.message);
+            }
+        }
+
+        // Biến để theo dõi trạng thái đang tải cuộc trò chuyện
+        let isLoadingConversation = false;
+
+        async function selectConversation(id) {
+            // Ngăn chặn việc gọi hàm nhiều lần cùng lúc
+            if (isLoadingConversation) return;
+            isLoadingConversation = true;
+
+            try {
+                // Đặt ID cuộc trò chuyện hiện tại
+                const r = await fetch('/api/conversations/set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ conv_id: id }) });
+                if (!r.ok) {
+                    const t = await r.text();
+                    alert('Không thể chọn cuộc trò chuyện: ' + t);
+                    isLoadingConversation = false;
+                    return;
+                }
+
+                // Lấy tin nhắn của cuộc trò chuyện
+                const msgResponse = await fetch(`/api/conversations/${id}/messages`);
+                if (!msgResponse.ok) {
+                    const t = await msgResponse.text();
+                    alert('Không thể tải tin nhắn: ' + t);
+                    isLoadingConversation = false;
+                    return;
+                }
+
+                const data = await msgResponse.json();
+                const messages = data.items || [];
+
+                // Xóa tin nhắn cũ và hiển thị tin nhắn mới
+                const container = document.getElementById('chat-messages');
+                if (container) {
+                    // Xóa tất cả tin nhắn cũ một cách an toàn
+                    while (container.firstChild) {
+                        container.removeChild(container.firstChild);
+                    }
+
+                    if (messages.length === 0) {
+                        container.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shrink-0">IR</div>
+                                <div class="max-w-[85%] sm:max-w-[70%] bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+                                    Cuộc trò chuyện trống. Hãy bắt đầu bằng cách gửi tin nhắn!
+                                </div>
+                            </div>`;
+                    } else {
+                        // Hiển thị tất cả tin nhắn
+                        messages.forEach(msg => {
+                            appendMessage(msg.role, msg.content);
+                        });
+                    }
+
+                    // Cuộn xuống dưới cùng
+                    container.scrollTop = container.scrollHeight;
+                }
+
+                // Chuyển đến tab chat nếu đang ở tab khác
+                switchTab('chat');
+
+                // Focus vào ô nhập liệu
+                focusChatInput();
+
+                // Đặt lại trạng thái tải
+                isLoadingConversation = false;
+            } catch (e) {
+                alert('Lỗi khi tải cuộc trò chuyện: ' + e.message);
+                isLoadingConversation = false;
             }
         }
 
@@ -708,7 +1480,7 @@
 
         function formatResponse(text) {
             if (!text) return '';
-            
+
             let formatted = text
                 // Bold text: **text** or __text__
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -732,18 +1504,18 @@
                 // Line breaks
                 .replace(/\n\n/g, '</p><p class="mb-3">')
                 .replace(/\n/g, '<br>');
-            
+
             formatted = '<p class="mb-3">' + formatted + '</p>';
-            
+
             formatted = formatted.replace(/<p class="mb-3"><\/p>/g, '');
-            
+
             return formatted;
         }
 
         async function makeAPICall(endpoint, data) {
             const modal = document.getElementById('loading-modal');
             modal.classList.remove('hidden');
-            
+
             try {
                 const response = await fetch(`/api/${endpoint}`, {
                     method: 'POST',
@@ -752,10 +1524,10 @@
                     },
                     body: JSON.stringify(data)
                 });
-                
+
                 const result = await response.json();
                 modal.classList.add('hidden');
-                
+
                 if (response.ok) {
                     return result;
                 } else {
@@ -771,16 +1543,27 @@
         function appendMessage(role, content) {
             const container = document.getElementById('chat-messages');
             if (!container) return;
+            
+            // Kiểm tra nếu tin nhắn đã tồn tại (tránh duplicate)
+            const existingMessages = container.querySelectorAll('.message-row');
+            const lastMessage = existingMessages[existingMessages.length - 1];
+            if (lastMessage) {
+                const lastContent = lastMessage.querySelector('.message-content');
+                if (lastContent && lastContent.textContent.trim() === content.trim()) {
+                    return; // Không thêm tin nhắn trùng lặp
+                }
+            }
+            
             const isUser = role === 'user';
             const row = document.createElement('div');
-            row.className = `flex items-start space-x-3 ${isUser ? 'justify-end' : ''}`;
+            row.className = `message-row flex items-start space-x-3 ${isUser ? 'justify-end' : ''}`;
 
             const avatar = document.createElement('div');
             avatar.className = `w-8 h-8 rounded-full ${isUser ? 'bg-gray-900 dark:bg-gray-100' : 'bg-gradient-to-br from-primary to-secondary'} text-white dark:text-gray-900 flex items-center justify-center shrink-0`;
             avatar.innerHTML = isUser ? '<i class="fas fa-user text-xs"></i>' : 'IR';
 
             const bubble = document.createElement('div');
-            bubble.className = `${isUser ? 'bg-primary text-white rounded-2xl rounded-tr-sm' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm'} max-w-[85%] sm:max-w-[70%] px-4 py-3 shadow-sm`;
+            bubble.className = `message-content ${isUser ? 'bg-primary text-white rounded-2xl rounded-tr-sm' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm'} max-w-[85%] sm:max-w-[70%] px-4 py-3 shadow-sm`;
             bubble.innerHTML = isUser ?
                 content.replace(/\n/g, '<br>') :
                 `<div class="prose max-w-none">${formatResponse(content)}</div>`;
@@ -831,26 +1614,66 @@
             if (chatBusy) return;
             const input = document.getElementById('chat-input');
             const text = (input?.value || '').trim();
-            if (!text) return;
+            
+            // Kiểm tra nếu không có tin nhắn và không có file
+            if (!text && uploadedFiles.length === 0) return;
 
-            appendMessage('user', text);
-            saveConversationSnippet(text);
+            // Kiểm tra xem tất cả file đã được đọc xong chưa
+            const filesWithContent = uploadedFiles.filter(f => f.content !== null);
+            if (uploadedFiles.length > 0 && filesWithContent.length !== uploadedFiles.length) {
+                alert('Vui lòng đợi file được tải xong trước khi gửi tin nhắn');
+                return;
+            }
+
+            // Tạo nội dung tin nhắn hiển thị (không gửi kèm dữ liệu file lớn)
+            const messageContent = text;
+            appendMessage('user', messageContent || (uploadedFiles.length ? uploadedFiles.map(f => `📎 File: ${f.name} (${formatFileSize(f.size)})`).join('\n') : ''));
+            saveConversationSnippet(text || 'File upload');
             input.value = '';
             autoResizeTextarea(input);
             setChatBusy(true);
             addTypingIndicator();
+            
+            // Cập nhật danh sách recent conversations sau khi gửi tin nhắn
+            hydrateRecentConversations();
 
             try {
-                // Stream via SSE
-                const resp = await fetch('/api/chat/stream', { 
-                    method:'POST', 
-                    headers:{
-                        'Content-Type':'application/json',
-                        'Accept':'text/event-stream'
-                    }, 
-                    body: JSON.stringify({ message: text }) 
+                // Nếu có file đính kèm → dùng multipart/form-data (không stream)
+                if (uploadedFiles.length > 0) {
+                    const form = new FormData();
+                    form.append('message', text);
+                    // Đính kèm từng file dưới key 'files'
+                    for (const f of uploadedFiles) {
+                        form.append('files', f.file, f.name);
+                    }
+                    const resp = await fetch('/api/chat', { method: 'POST', body: form });
+                    removeTypingIndicator();
+                    const lastRowC = document.getElementById('chat-messages').lastElementChild;
+                    const lastBubbleC = lastRowC.querySelector('.prose') || lastRowC.appendChild(Object.assign(document.createElement('div'), { className: 'prose max-w-none' }));
+                    if (!resp.ok) {
+                        const errText = await resp.text();
+                        lastBubbleC.innerHTML = `${formatResponse('Có lỗi xảy ra: ' + (errText || resp.status))}`;
+                    } else {
+                        const data = await resp.json();
+                        lastBubbleC.innerHTML = `${formatResponse(data.result || 'Done')}`;
+                        // Xóa danh sách file sau khi gửi thành công
+                        clearUploadedFiles();
+                    }
+                    setChatBusy(false);
+                    return;
+                }
+
+                // Không có file → stream via SSE như cũ
+                const requestData = { message: text, files: [] };
+                const resp = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify(requestData)
                 });
-                if (!resp.ok || !resp.body){
+                if (!resp.ok || !resp.body) {
                     removeTypingIndicator();
                     const errText = await resp.text();
                     appendMessage('assistant', 'Có lỗi xảy ra: ' + (errText || resp.status));
@@ -863,40 +1686,71 @@
                 const container = document.getElementById('chat-messages');
                 const lastRow = container.lastElementChild;
                 let lastBubble = lastRow.querySelector('.prose');
-                if (!lastBubble){
+                if (!lastBubble) {
                     lastBubble = document.createElement('div');
                     lastBubble.className = 'prose max-w-none';
                     lastRow.appendChild(lastBubble);
                 }
                 let assistantText = '';
                 let buffer = '';
-                while (true){
+                let isTyping = false;
+                let typingSpeed = 15; // milliseconds per character
+                let typingQueue = [];
+
+                // Function to simulate typing effect
+                const typeCharacter = async (char) => {
+                    if (!isTyping) return;
+                    assistantText += char;
+                    lastBubble.innerHTML = `${formatResponse(assistantText)}`;
+                    container.scrollTop = container.scrollHeight;
+
+                    if (typingQueue.length > 0) {
+                        const nextChar = typingQueue.shift();
+                        setTimeout(() => typeCharacter(nextChar), typingSpeed);
+                    } else {
+                        isTyping = false;
+                    }
+                };
+
+                isTyping = true;
+
+                while (true) {
                     const { value, done } = await reader.read();
                     if (done) break;
-                    buffer += decoder.decode(value, {stream: true});
+                    buffer += decoder.decode(value, { stream: true });
                     const parts = buffer.split('\n\n');
                     buffer = parts.pop() || '';
-                    for (const ev of parts){
+                    for (const ev of parts) {
                         const line = ev.trim();
                         if (!line.startsWith('data:')) continue;
                         let payload;
                         try { payload = JSON.parse(line.slice(5).trim()); } catch { continue; }
-                        if (payload.delta){
-                            assistantText += payload.delta;
-                            lastBubble.innerHTML = `${formatResponse(assistantText)}`;
-                            container.scrollTop = container.scrollHeight;
+                        if (payload.delta) {
+                            // Add characters to typing queue
+                            const chars = payload.delta.split('');
+                            typingQueue.push(...chars);
+
+                            // Start typing if not already typing
+                            if (isTyping && typingQueue.length > 0 && !typingQueue.typing) {
+                                typingQueue.typing = true;
+                                const nextChar = typingQueue.shift();
+                                setTimeout(() => typeCharacter(nextChar), typingSpeed);
+                            }
                         }
                     }
                 }
                 // Fallback: if nothing streamed, call non-stream API once
                 if (!assistantText) {
-                    const res = await makeAPICall('chat', { message: text });
+                    const res = await makeAPICall('chat', requestData);
                     if (res && res.result) {
                         lastBubble.innerHTML = `${formatResponse(res.result)}`;
                     } else {
                         lastBubble.innerHTML = 'Xin lỗi, có lỗi xảy ra.';
                     }
                 }
+                
+                // Xóa file sau khi gửi thành công
+                clearUploadedFiles();
             } catch (e) {
                 removeTypingIndicator();
                 appendMessage('assistant', 'Xin lỗi, có lỗi xảy ra.');
@@ -911,7 +1765,7 @@
                 alert('Vui lòng nhập câu hỏi!');
                 return;
             }
-            
+
             const result = await makeAPICall('explain', { question });
             if (result) {
                 const resultDiv = document.getElementById('explain-result');
@@ -923,12 +1777,12 @@
         async function handleSummarize() {
             const text = document.getElementById('summarize-input').value.trim();
             const ratio = document.getElementById('summarize-ratio').value / 100;
-            
+
             if (!text) {
                 alert('Vui lòng nhập văn bản!');
                 return;
             }
-            
+
             const result = await makeAPICall('summarize', { text, ratio });
             if (result) {
                 const resultDiv = document.getElementById('summarize-result');
@@ -940,12 +1794,12 @@
         async function handleExplainCode() {
             const code = document.getElementById('code-input').value.trim();
             const language = document.getElementById('code-language').value;
-            
+
             if (!code) {
                 alert('Vui lòng nhập code!');
                 return;
             }
-            
+
             const result = await makeAPICall('explain_code', { code, language });
             if (result) {
                 const resultDiv = document.getElementById('code-result');
@@ -957,18 +1811,18 @@
         async function handleFlashcards() {
             const text = document.getElementById('flashcards-input').value.trim();
             const n = parseInt(document.getElementById('flashcards-count').value);
-            
+
             if (!text) {
                 alert('Vui lòng nhập nội dung!');
                 return;
             }
-            
+
             const result = await makeAPICall('flashcards', { text, n });
             if (result) {
                 console.log("[v0] Flashcard result:", result); // Added debug log to see actual data structure
                 const resultDiv = document.getElementById('flashcards-result');
                 let html = '';
-                
+
                 let flashcards;
                 try {
                     if (typeof result.result === 'string') {
@@ -978,9 +1832,9 @@
                     } else {
                         flashcards = result.result.flashcards || result.result;
                     }
-                    
+
                     console.log("[v0] Parsed flashcards:", flashcards);
-                    
+
                     if (!Array.isArray(flashcards)) {
                         throw new Error('Flashcards is not an array');
                     }
@@ -989,18 +1843,18 @@
                     alert('Lỗi khi xử lý dữ liệu flashcard: ' + e.message);
                     return;
                 }
-                
+
                 if (!flashcards || flashcards.length === 0) {
                     resultDiv.innerHTML = '<div class="text-center text-gray-500 py-8">Không có flashcard nào được tạo.</div>';
                     resultDiv.classList.remove('hidden');
                     return;
                 }
-                
+
                 flashcards.forEach((card, index) => {
                     const question = card.question || card.front || 'Không có câu hỏi';
                     const answer = card.answer || card.back || 'Không có đáp án';
                     const explanation = card.explanation || '';
-                    
+
                     html += `
                         <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                             <div class="flashcard cursor-pointer" onclick="flipCard(${index})">
@@ -1042,7 +1896,7 @@
                         </div>
                     `;
                 });
-                
+
                 resultDiv.innerHTML = html;
                 resultDiv.classList.remove('hidden');
             }
@@ -1051,7 +1905,7 @@
         function flipCard(index) {
             const front = document.getElementById(`card-front-${index}`);
             const back = document.getElementById(`card-back-${index}`);
-            
+
             if (front.classList.contains('hidden')) {
                 front.classList.remove('hidden');
                 back.classList.add('hidden');
@@ -1065,25 +1919,25 @@
             try {
                 const front = document.getElementById(`card-front-${index}`);
                 const back = document.getElementById(`card-back-${index}`);
-                
+
                 if (!front || !back) {
                     throw new Error('Không tìm thấy flashcard');
                 }
-                
+
                 const questionEl = front.querySelector('.text-gray-800');
                 const answerEl = back.querySelector('.text-gray-800');
                 const explanationEl = back.querySelector('.text-gray-600');
-                
+
                 if (!questionEl || !answerEl) {
                     throw new Error('Không tìm thấy nội dung flashcard');
                 }
-                
+
                 const question = questionEl.textContent.trim();
                 const answer = answerEl.textContent.trim();
                 const explanation = explanationEl ? explanationEl.textContent.trim() : '';
-                
+
                 const flashcardText = `Câu hỏi: ${question}\n\nĐáp án: ${answer}${explanation ? `\n\nGiải thích: ${explanation}` : ''}`;
-                
+
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(flashcardText).then(() => {
                         showCopySuccess();
@@ -1099,7 +1953,7 @@
                 alert('Lỗi khi copy: ' + error.message);
             }
         }
-        
+
         function fallbackCopy(text) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -1109,7 +1963,7 @@
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
+
             try {
                 document.execCommand('copy');
                 showCopySuccess();
@@ -1120,21 +1974,21 @@
                 document.body.removeChild(textArea);
             }
         }
-        
+
         function showCopySuccess() {
             const button = event.target.closest('button');
             if (button) {
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="fas fa-check mr-2"></i>Đã copy!';
                 button.classList.add('text-green-600');
-                
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.classList.remove('text-green-600');
                 }, 2000);
             }
         }
-        
+
         function showManualCopyModal(text) {
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
@@ -1153,24 +2007,24 @@
         async function handleQuiz() {
             const text = document.getElementById('quiz-input').value.trim();
             const n = parseInt(document.getElementById('quiz-count').value);
-            
+
             if (!text) {
                 alert('Vui lòng nhập nội dung!');
                 return;
             }
-            
+
             const result = await makeAPICall('quiz', { text, n });
             if (result) {
                 const resultDiv = document.getElementById('quiz-result');
                 let html = '';
-                
+
                 result.result.forEach((quiz, index) => {
                     html += `
                         <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <h4 class="font-semibold text-gray-800 mb-3">Câu ${index + 1}: ${formatResponse(quiz.question)}</h4>
                             <div class="space-y-2 mb-4">
                     `;
-                    
+
                     quiz.options.forEach((option, optIndex) => {
                         html += `
                             <label class="flex items-center space-x-2 cursor-pointer">
@@ -1179,7 +2033,7 @@
                             </label>
                         `;
                     });
-                    
+
                     html += `
                             </div>
                             <button onclick="showAnswer(${index})" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-90">
@@ -1192,7 +2046,7 @@
                         </div>
                     `;
                 });
-                
+
                 resultDiv.innerHTML = html;
                 resultDiv.classList.remove('hidden');
             }
@@ -1207,12 +2061,12 @@
             const goal = document.getElementById('study-goal').value.trim();
             const days = parseInt(document.getElementById('study-days').value);
             const hours = parseInt(document.getElementById('study-hours').value);
-            
+
             if (!goal) {
                 alert('Vui lòng nhập mục tiêu!');
                 return;
             }
-            
+
             const result = await makeAPICall('study_plan', { goal, days, hours });
             if (result) {
                 const resultDiv = document.getElementById('study-plan-result');
@@ -1226,7 +2080,7 @@
             try {
                 const response = await fetch('/api/cache/stats');
                 const stats = await response.json();
-                
+
                 if (response.ok) {
                     const elTotal = document.getElementById('total-cache');
                     const elHits = document.getElementById('cache-hits');
@@ -1236,28 +2090,28 @@
                     if (elHits) elHits.textContent = stats.cache_hits || stats.total_hits || 0;
                     if (elTokens) elTokens.textContent = ((stats.tokens_saved || 0)).toLocaleString();
                     if (elCount) elCount.textContent = stats.total_entries || 0;
-                    
+
                     const detailsDiv = document.getElementById('cache-details');
                     let detailsHtml = '';
-                    
+
                     const byFunc = stats.by_function || stats.function_stats || {};
                     if (byFunc && Object.keys(byFunc).length > 0) {
                         detailsHtml += '<h5 class="font-medium text-gray-700 mb-2">Cache theo chức năng:</h5>';
                         for (const [func, val] of Object.entries(byFunc)) {
                             const count = typeof val === 'object' ? (val.entries || val.count || 0) : val;
                             const hits = typeof val === 'object' ? (val.hits || 0) : 0;
-                            detailsHtml += `<p>• ${func}: ${count} entries${hits?`, ${hits} hits`:''}</p>`;
+                            detailsHtml += `<p>• ${func}: ${count} entries${hits ? `, ${hits} hits` : ''}</p>`;
                         }
                     }
-                    
+
                     if (stats.oldest_entry) {
                         detailsHtml += `<p class="mt-2"><strong>Entry cũ nhất:</strong> ${new Date(stats.oldest_entry).toLocaleString('vi-VN')}</p>`;
                     }
-                    
+
                     if (stats.newest_entry) {
                         detailsHtml += `<p><strong>Entry mới nhất:</strong> ${new Date(stats.newest_entry).toLocaleString('vi-VN')}</p>`;
                     }
-                    
+
                     if (detailsDiv) detailsDiv.innerHTML = detailsHtml || '<p>Không có dữ liệu cache.</p>';
                 } else {
                     alert('Lỗi khi tải thống kê cache: ' + (stats.error || 'Unknown error'));
@@ -1267,14 +2121,14 @@
                 showToast('Lỗi khi tải thống kê cache');
             }
         }
-        
+
         async function clearExpiredCache() {
             if (!confirm('Bạn có chắc muốn xóa cache hết hạn?')) return;
-            
+
             try {
                 const response = await fetch('/api/cache/clear-expired', { method: 'POST' });
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     showToast('Đã xóa cache hết hạn');
                     loadCacheStats();
@@ -1286,14 +2140,14 @@
                 showToast('Lỗi khi xóa cache hết hạn');
             }
         }
-        
+
         async function clearAllCache() {
             if (!confirm('Bạn có chắc muốn xóa TOÀN BỘ cache? Hành động này không thể hoàn tác!')) return;
-            
+
             try {
                 const response = await fetch('/api/cache/clear', { method: 'POST' });
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     showToast('Đã xóa toàn bộ cache');
                     loadCacheStats();
@@ -1307,106 +2161,6 @@
         }
     </script>
 
-    <style>
-        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; }
-        .flashcard {
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .flashcard:hover {
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active {
-            border-color: #6366f1 !important;
-            color: #6366f1 !important;
-        }
-
-        .prose {
-            line-height: 1.6;
-        }
-
-        .prose h1,
-        .prose h2,
-        .prose h3 {
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .prose strong {
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .prose em {
-            font-style: italic;
-            color: #4b5563;
-        }
-
-        .prose code {
-            background-color: #f3f4f6;
-            padding: 0.125rem 0.5rem;
-            border-radius: 0.25rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.875rem;
-        }
-
-        .prose li {
-            margin-bottom: 0.25rem;
-        }
-        
-        .dark .prose strong {
-            color: #d1d5db;
-        }
-
-        .dark .prose em {
-            color: #9ca3af;
-        }
-
-        .dark .prose code {
-            background-color: #374151;
-            color: #e5e7eb;
-        }
-        
-        @media (max-width: 640px) {
-            .tab-btn {
-                font-size: 0.75rem;
-                padding-left: 0.25rem;
-                padding-right: 0.25rem;
-            }
-            
-            .flashcard {
-                margin-bottom: 1rem;
-            }
-            
-            nav[aria-label="Tabs"] {
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
-            }
-            
-            nav[aria-label="Tabs"]::-webkit-scrollbar {
-                display: none;
-            }
-        }
-        
-        .tab-btn:focus {
-            outline: 2px solid #6366f1;
-            outline-offset: 2px;
-        }
-        
-        textarea:focus,
-        input:focus,
-        select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        * {
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
-    </style>
 </body>
 
 </html>

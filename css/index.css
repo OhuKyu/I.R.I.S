@@ -1,0 +1,259 @@
+/* CSS cho trang mainForm */
+
+/* Thiết lập chung */
+body {
+    transition: colors 0.3s ease;
+}
+
+/* Header styles */
+header {
+    transition: colors 0.3s ease;
+}
+
+/* Sidebar styles */
+.side-item {
+    transition: all 0.2s ease;
+}
+
+.side-item:hover {
+    background-color: rgba(243, 244, 246, 1);
+}
+
+.dark .side-item:hover {
+    background-color: rgba(55, 65, 81, 1);
+}
+
+.side-item.active {
+    background-color: rgba(243, 244, 246, 1);
+    font-weight: 500;
+}
+
+.dark .side-item.active {
+    background-color: rgba(55, 65, 81, 1);
+}
+
+/* Study tab styles */
+.study-tab-btn.active {
+    color: rgba(17, 24, 39, 1);
+    border-color: rgba(17, 24, 39, 1);
+}
+
+.dark .study-tab-btn.active {
+    color: rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 1);
+}
+
+/* Chat message styles */
+#chat-messages {
+    scroll-behavior: smooth;
+}
+
+/* Settings menu */
+#settings-menu {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+body {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+.flashcard {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.flashcard:hover {
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    border-color: #6366f1 !important;
+    color: #6366f1 !important;
+}
+
+.prose {
+    line-height: 1.6;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.prose strong {
+    font-weight: 600;
+    color: #374151;
+}
+
+.prose em {
+    font-style: italic;
+    color: #4b5563;
+}
+
+.prose code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.prose li {
+    margin-bottom: 0.25rem;
+}
+
+.dark .prose strong {
+    color: #d1d5db;
+}
+
+.dark .prose em {
+    color: #9ca3af;
+}
+
+.dark .prose code {
+    background-color: #374151;
+    color: #e5e7eb;
+}
+
+@media (max-width: 640px) {
+    .tab-btn {
+        font-size: 0.75rem;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .flashcard {
+        margin-bottom: 1rem;
+    }
+
+    nav[aria-label="Tabs"] {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    nav[aria-label="Tabs"]::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.tab-btn:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+* {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* CSS cho trang admin */
+
+/* Thiết lập chung */
+body {
+    transition: colors 0.3s ease;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: rgba(249, 250, 251, 1);
+}
+
+/* Form styles */
+input, select {
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: rgba(17, 24, 39, 0.8);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.2);
+}
+
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Toast notification */
+#toast {
+    transition: opacity 0.3s ease;
+}
+
+/* CSS cho trang login */
+
+/* Thiết lập chung */
+body {
+    transition: colors 0.3s ease;
+}
+
+/* Form styles */
+input {
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: rgba(17, 24, 39, 0.8);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.2);
+}
+
+.dark input:focus {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* CSS cho trang register */
+
+/* Thiết lập chung */
+body {
+    transition: colors 0.3s ease;
+}
+
+/* Form styles */
+input {
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: rgba(17, 24, 39, 0.8);
+    box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.2);
+}
+
+.dark input:focus {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}

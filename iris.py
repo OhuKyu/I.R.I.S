@@ -1,4 +1,4 @@
-import os, sys, json, textwrap
+import os, json
 from dataclasses import dataclass
 from typing import List
 
@@ -7,13 +7,11 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 from cache_manager import CacheManager
 
-# Load API keys
 load_dotenv()
 MONICA_KEY = os.getenv("MONICA_API_KEY")
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 if not MONICA_KEY or not GEMINI_KEY:
-    # Thay vì sys.exit(1) để process không chết trên platform như Railway.
     print("⚠️ Missing API keys: MONICA_API_KEY or GEMINI_API_KEY not set. Set environment variables to enable AI calls.")
     MONICA_KEY = MONICA_KEY or ""
     GEMINI_KEY = GEMINI_KEY or ""

@@ -1,12 +1,19 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, Response
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, Response, send_file
 from iris import IRIS
 from cache_manager import CacheManager
 import json
 import os
 import sqlite3
 import secrets
+import io
 from datetime import timedelta
-from functools import wraps
+from base64 import b64decode, b64encode
+
+# Optional cryptography for AES-GCM decryption
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+except Exception:
+    AESGCM = None
 
 try:
     from flask_wtf import CSRFProtect
@@ -28,6 +35,8 @@ if csrf:
 def maybe_csrf_exempt(func):
     return csrf.exempt(func) if csrf else func
 
+# Feature flags (none for now)
+
 try:
     iris = IRIS()
     cache = CacheManager()
@@ -37,6 +46,207 @@ except Exception as e:
     print(f"❌ Error initializing components: {e}")
     iris = None
     cache = None
+
+# ===== File Processing / Encryption Helpers =====
+def _get_or_create_upload_key() -> bytes:
+    """Return per-session 32-byte key for AES-GCM. Creates if absent."""
+    key_b64 = session.get('upload_key')
+    if key_b64:
+        try:
+            return b64decode(key_b64)
+        except Exception:
+            pass
+    key = os.urandom(32)
+    session['upload_key'] = b64encode(key).decode('utf-8')
+    return key
+
+def _decrypt_file_payload(file_data: dict) -> str:
+    """Decrypt encrypted file payload if present. Returns UTF-8 text content.
+
+    Expected fields when encrypted: 'cipher' (base64), 'iv' (base64), 'algo' == 'AES-GCM'.
+    """
+    # If not encrypted, return provided content
+    if not file_data or not isinstance(file_data, dict):
+        return ''
+
+    cipher_b64 = file_data.get('cipher')
+    iv_b64 = file_data.get('iv')
+    algo = (file_data.get('algo') or '').upper()
+    raw_content = file_data.get('content')
+
+    # If cipher not provided, assume plaintext in 'content'
+    if not cipher_b64 or not iv_b64 or algo != 'AES-GCM':
+        return (raw_content or '')
+
+    if AESGCM is None:
+        # cryptography not installed; cannot decrypt → fallback to empty
+        return ''
+
+    try:
+        key = _get_or_create_upload_key()
+        aesgcm = AESGCM(key)
+        ct = b64decode(cipher_b64)
+        iv = b64decode(iv_b64)
+        pt = aesgcm.decrypt(iv, ct, None)
+        return pt.decode('utf-8', errors='replace')
+    except Exception as e:
+        print(f"Error decrypting file payload: {e}")
+        return ''
+def _read_uploaded_file_storage(file_storage) -> str:
+    """Read a Werkzeug FileStorage (multipart upload) and try extracting text.
+
+    Returns a short description or extracted text wrapped for AI consumption.
+    """
+    try:
+        name = getattr(file_storage, 'filename', 'upload') or 'upload'
+        content_type = getattr(file_storage, 'mimetype', '') or ''
+        data_bytes = file_storage.read() or b''
+        file_storage.seek(0)
+
+        # Text or JSON
+        if content_type.startswith('text/') or content_type == 'application/json':
+            try:
+                txt = data_bytes.decode('utf-8', errors='replace')
+            except Exception:
+                txt = ''
+            if txt:
+                return f"📄 **{name}**\n```\n{txt}\n```"
+            return f"📄 **{name}** (text file - empty)"
+
+        # PDF
+        if content_type == 'application/pdf':
+            try:
+                import pdfplumber
+                extracted = ''
+                if data_bytes:
+                    with pdfplumber.open(io.BytesIO(data_bytes)) as pdf:
+                        pages_text = []
+                        for p in pdf.pages:
+                            try:
+                                pages_text.append(p.extract_text() or '')
+                            except Exception:
+                                pages_text.append('')
+                        extracted = '\n'.join(pages_text).strip()
+                if extracted:
+                    return f"📄 **{name}** (PDF extracted)\n```\n{extracted}\n```"
+                return f"📄 **{name}** (PDF file - content not extracted)"
+            except Exception as ex:
+                print(f"PDF extract failed (multipart) for {name}: {ex}")
+                return f"📄 **{name}** (PDF file - content not extracted)"
+
+        # Other known office types
+        if content_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+            return f"📄 **{name}** (Word document - content not extracted)"
+        if content_type in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']:
+            return f"📄 **{name}** (Excel spreadsheet - content not extracted)"
+
+        # Fallback
+        return f"📄 **{name}** (File type: {content_type})"
+    except Exception as e:
+        print(f"Error reading multipart file: {e}")
+        return ''
+
+
+def process_uploaded_files(files):
+    """Process uploaded files and return formatted content for AI.
+
+    Supports encrypted text/json payloads using AES-GCM from the frontend.
+    """
+    if not files:
+        return ""
+    
+    file_contents = []
+    
+    for file_data in files:
+        try:
+            name = file_data.get('name', 'unknown')
+            file_type = file_data.get('type', '')
+            # Decrypt if encrypted, else use plaintext content
+            content = _decrypt_file_payload(file_data)
+            
+            if not content:
+                # For non-text types we still note presence
+                if file_type and not (file_type.startswith('text/') or file_type == 'application/json'):
+                    # Keep previous behavior: mention file without content extraction
+                    if file_type == 'application/pdf':
+                        file_contents.append(f"📄 **{name}** (PDF file - content not extracted)")
+                    elif file_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+                        file_contents.append(f"📄 **{name}** (Word document - content not extracted)")
+                    elif file_type in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']:
+                        file_contents.append(f"📄 **{name}** (Excel spreadsheet - content not extracted)")
+                    else:
+                        file_contents.append(f"📄 **{name}** (File type: {file_type})")
+                continue
+                
+            # Handle different file types
+            if file_type.startswith('text/') or file_type == 'application/json':
+                # Text files - content is already decoded
+                file_contents.append(f"📄 **{name}**\n```\n{content}\n```")
+                
+            elif file_type == 'application/pdf':
+                # Attempt to extract text from PDF content. Expect encrypted text to be
+                # the original content string; for DataURL uploads we won't have bytes here.
+                try:
+                    import pdfplumber
+                    # If content looks like a data URL, strip header
+                    data = content
+                    if isinstance(data, str) and data.startswith('data:'):
+                        try:
+                            header, b64 = data.split(',', 1)
+                            data_bytes = b64decode(b64)
+                        except Exception:
+                            data_bytes = b''
+                    elif isinstance(data, str):
+                        # Try raw base64 without data URL prefix
+                        try:
+                            data_bytes = b64decode(data)
+                        except Exception:
+                            data_bytes = b''
+                    else:
+                        # content is expected to be text; not bytes. Nothing to parse.
+                        data_bytes = b''
+
+                    extracted = ''
+                    if data_bytes:
+                        with pdfplumber.open(io.BytesIO(data_bytes)) as pdf:
+                            pages_text = []
+                            for p in pdf.pages:
+                                try:
+                                    pages_text.append(p.extract_text() or '')
+                                except Exception:
+                                    pages_text.append('')
+                            extracted = '\n'.join(pages_text).strip()
+
+                    if extracted:
+                        file_contents.append(f"📄 **{name}** (PDF extracted)\n```\n{extracted}\n```")
+                    else:
+                        # If we couldn't extract, just note the file
+                        file_contents.append(f"📄 **{name}** (PDF file - content not extracted)")
+                except Exception as ex:
+                    print(f"PDF extract failed for {name}: {ex}")
+                
+            elif file_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+                # Word documents
+                file_contents.append(f"📄 **{name}** (Word document - content not extracted)")
+                
+            elif file_type in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']:
+                # Excel files
+                file_contents.append(f"📄 **{name}** (Excel spreadsheet - content not extracted)")
+                
+            else:
+                # Other file types (already handled if no content)
+                file_contents.append(f"📄 **{name}** (File type: {file_type})")
+                
+        except Exception as e:
+            print(f"Error processing file {file_data.get('name', 'unknown')}: {e}")
+            continue
+    
+    if file_contents:
+        return "**Uploaded Files:**\n\n" + "\n\n".join(file_contents)
+    
+    return ""
+
+# File system operations removed along with File Manager feature
 
 # ===== Auth storage (SQLite) =====
 USERS_DB = os.path.join(os.path.dirname(__file__), 'iris_users.db')
@@ -184,7 +394,8 @@ def enforce_authentication():
     path = request.path or '/'
     is_auth = bool(session.get('user'))
     public_paths = {'/login', '/register', '/health'}
-    if path.startswith('/static/'):
+    # Allow static files without authentication
+    if path.startswith('/static/') or path.startswith('/css/') or path.startswith('/js/') or path.startswith('/images/'):
         return None
     # Refresh role from DB on every request so changes take effect immediately
     if is_auth:
@@ -201,6 +412,7 @@ def enforce_authentication():
     if not is_auth and path not in public_paths:
         return redirect(url_for('login'))
     return None
+
 
 @app.route('/health')
 def health_check():
@@ -227,6 +439,16 @@ def index():
     if not session.get('user'):
         return redirect(url_for('login'))
     return render_template('index.html', role=session.get('role', 'user'), username=session.get('user'))
+
+@app.route('/api/upload_key', methods=['GET'])
+@maybe_csrf_exempt
+def api_upload_key():
+    """Provide per-session key for AES-GCM client-side encryption."""
+    key = _get_or_create_upload_key()
+    return jsonify({
+        'algo': 'AES-GCM',
+        'key': b64encode(key).decode('utf-8')
+    })
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -365,14 +587,41 @@ def api_chat():
     if iris is None:
         return jsonify({'error': 'I.R.I.S not initialized'}), 503
     try:
-        data = request.get_json()
-        message = data.get('message', '')
-        if not message:
-            return jsonify({'error': 'Message is required'}), 400
+        # Support JSON or multipart/form-data
+        message = ''
+        files = []
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            message = (request.form.get('message') or '').strip()
+            # Extract text immediately and append into message
+            extracted_blocks = []
+            for _, fs in request.files.items():
+                desc = _read_uploaded_file_storage(fs)
+                if desc:
+                    extracted_blocks.append(desc)
+            if extracted_blocks:
+                message = f"{message}\n\n".join([m for m in [message] if m]) + ("\n\n" if message else "") + "\n\n".join(extracted_blocks)
+            # Do not pass files further; already merged into message
+            files = []
+        else:
+            data = request.get_json() or {}
+            message = (data.get('message') or '').strip()
+            files = data.get('files', [])
+        
+        if not message and not files:
+            return jsonify({'error': 'Message or files are required'}), 400
+        
+        # Process files and add to message
+        file_content = ""
+        if files:
+            file_content = process_uploaded_files(files)
+            if file_content:
+                message = f"{message}\n\n{file_content}" if message else file_content
+        
         # Conversation ensure
         conv_id = session.get('conv_id')
         if not conv_id:
-            conv_id = create_conversation(session.get('user'), title=message[:60])
+            title = message[:60] if message else "File upload"
+            conv_id = create_conversation(session.get('user'), title=title)
             session['conv_id'] = conv_id
         add_message(conv_id, 'user', message)
         result = iris.chat(message)
@@ -387,14 +636,38 @@ def api_chat_stream():
     if iris is None:
         return Response('data: {"error":"I.R.I.S not initialized"}\n\n', mimetype='text/event-stream')
     try:
-        data = request.get_json(force=True, silent=True) or {}
-        message = (data.get('message') or '').strip()
-        if not message:
-            return Response('data: {"error":"Message is required"}\n\n', mimetype='text/event-stream')
+        # Support JSON or multipart/form-data
+        files = []
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            message = (request.form.get('message') or '').strip()
+            extracted_blocks = []
+            for _, fs in request.files.items():
+                desc = _read_uploaded_file_storage(fs)
+                if desc:
+                    extracted_blocks.append(desc)
+            if extracted_blocks:
+                message = f"{message}\n\n".join([m for m in [message] if m]) + ("\n\n" if message else "") + "\n\n".join(extracted_blocks)
+            files = []
+        else:
+            data = request.get_json(force=True, silent=True) or {}
+            message = (data.get('message') or '').strip()
+            files = data.get('files', [])
+        
+        if not message and not files:
+            return Response('data: {"error":"Message or files are required"}\n\n', mimetype='text/event-stream')
+        
+        # Process files and add to message
+        file_content = ""
+        if files:
+            file_content = process_uploaded_files(files)
+            if file_content:
+                message = f"{message}\n\n{file_content}" if message else file_content
+        
         # ensure conversation
         conv_id = session.get('conv_id')
         if not conv_id:
-            conv_id = create_conversation(session.get('user'), title=message[:60])
+            title = message[:60] if message else "File upload"
+            conv_id = create_conversation(session.get('user'), title=title)
             session['conv_id'] = conv_id
         add_message(conv_id, 'user', message)
 
@@ -410,6 +683,49 @@ def api_chat_stream():
         return Response(generate(), mimetype='text/event-stream')
     except Exception as e:
         return Response(f'data: {{"error":"{str(e)}"}}\n\n', mimetype='text/event-stream')
+
+# File Manager API endpoints removed
+
+# ===== Static Files Routes =====
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    """Serve CSS files"""
+    try:
+        css_path = os.path.join(os.path.dirname(__file__), 'css', filename)
+        if os.path.exists(css_path):
+            with open(css_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return Response(content, mimetype='text/css')
+        else:
+            return "CSS file not found", 404
+    except Exception as e:
+        return f"Error serving CSS: {str(e)}", 500
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    """Serve JavaScript files"""
+    try:
+        js_path = os.path.join(os.path.dirname(__file__), 'js', filename)
+        if os.path.exists(js_path):
+            with open(js_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return Response(content, mimetype='application/javascript')
+        else:
+            return "JS file not found", 404
+    except Exception as e:
+        return f"Error serving JS: {str(e)}", 500
+
+@app.route('/images/<path:filename>')
+def serve_images(filename):
+    """Serve image files"""
+    try:
+        img_path = os.path.join(os.path.dirname(__file__), 'images', filename)
+        if os.path.exists(img_path):
+            return send_file(img_path)
+        else:
+            return "Image file not found", 404
+    except Exception as e:
+        return f"Error serving image: {str(e)}", 500
 
 @app.route('/api/conversations/new', methods=['POST'])
 @maybe_csrf_exempt
