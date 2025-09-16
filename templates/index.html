@@ -66,6 +66,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
+                    <button onclick="toggleMobileSidebar(true)"
+                        class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 sm:hidden"
+                        title="Menu">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-300"></i>
+                    </button>
                     <button onclick="toggleTheme()"
                         class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                         title="Toggle theme">
@@ -141,6 +146,50 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- Mobile Sidebar Drawer -->
+            <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 sm:hidden">
+                <div class="absolute inset-0 bg-black/40" onclick="toggleMobileSidebar(false)"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-72 max-w-[85%] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-3 overflow-y-auto">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-brain text-primary"></i>
+                            <span class="font-semibold">I.R.I.S</span>
+                        </div>
+                        <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700" onclick="toggleMobileSidebar(false)"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
+                            <button onclick="newChat(); toggleMobileSidebar(false)"
+                                class="w-full flex items-center justify-center gap-2 bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900 py-2.5 rounded-lg hover:opacity-90">
+                                <i class="fas fa-plus"></i>
+                                <span>New Chat</span>
+                            </button>
+                        </div>
+                        <nav class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2">
+                            <button onclick="switchTab('chat'); toggleMobileSidebar(false)"
+                                class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                                <i class="fas fa-comments"></i>
+                                <span>AI Chat</span>
+                            </button>
+                            <button onclick="switchTab('explain'); toggleMobileSidebar(false)"
+                                class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                                <i class="fas fa-screwdriver-wrench"></i>
+                                <span>Study Tools</span>
+                            </button>
+                            <button onclick="openHistory(); toggleMobileSidebar(false)"
+                                class="side-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left">
+                                <i class="fas fa-rotate-left"></i>
+                                <span>History</span>
+                            </button>
+                        </nav>
+                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
+                            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Recent Conversations</h3>
+                            <div id="recent-conversations-mobile" class="space-y-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Main Panel -->
             <main class="flex-1">
@@ -767,6 +816,21 @@
             const input = document.getElementById('chat-input');
             if (input) input.focus();
         }
+
+        // Mobile sidebar toggle
+        function toggleMobileSidebar(show) {
+            const drawer = document.getElementById('mobile-sidebar');
+            if (!drawer) return;
+            if (show) {
+                drawer.classList.remove('hidden');
+            } else {
+                drawer.classList.add('hidden');
+            }
+            const src = document.getElementById('recent-conversations');
+            const dst = document.getElementById('recent-conversations-mobile');
+            if (src && dst) dst.innerHTML = src.innerHTML;
+        }
+        window.toggleMobileSidebar = toggleMobileSidebar;
 
         // File upload state
         let uploadedFiles = [];
